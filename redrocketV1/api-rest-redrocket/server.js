@@ -285,6 +285,22 @@ app.get('/user/counters/:id', async (req, res) => {
 
 
 /////////////// Ruta para seguir a un usuario////////////////////////////
+// app.post('/user/follow/:id', async (req, res) => {
+//   const { id } = req.params;
+//   const { followed } = req.body;
+
+//   try {
+//     const dbConnection = await connection();
+//     const followUserSql = 'INSERT INTO follow (user_id, followed_id) VALUES (?, ?)';
+//     await dbConnection.query(followUserSql, [followed, id]);
+
+//     res.json({ message: 'Has seguido al usuario correctamente.' });
+//   } catch (error) {
+//     console.error('Error:', error);
+//     res.status(500).json({ message: 'Ha ocurrido un error en el servidor' });
+//   }
+// });
+
 app.post('/user/follow/:id', async (req, res) => {
   const { id } = req.params;
   const { followed } = req.body;
@@ -292,14 +308,16 @@ app.post('/user/follow/:id', async (req, res) => {
   try {
     const dbConnection = await connection();
     const followUserSql = 'INSERT INTO follow (user_id, followed_id) VALUES (?, ?)';
-    await dbConnection.query(followUserSql, [followed, id]);
+    await dbConnection.query(followUserSql, [id, followed]);
 
-    res.json({ message: 'Has seguido al usuario correctamente.' });
+    res.json({ status: 'success', message: 'Has seguido al usuario correctamente.' });
   } catch (error) {
     console.error('Error:', error);
-    res.status(500).json({ message: 'Ha ocurrido un error en el servidor' });
+    res.status(500).json({ status: 'error', message: 'Ha ocurrido un error en el servidor' });
   }
 });
+
+
 
 ///////////// Ruta para dejar de seguir a un usuario///////////////////
 app.delete('/user/unfollow/:userId', async (req, res) => {
@@ -319,7 +337,36 @@ app.delete('/user/unfollow/:userId', async (req, res) => {
 });
 
 /////////// Ruta para obtener la lista de usuarios/////////////////
+app.get('/user/list', async (req, res) => {
+  try {
+    const dbConnection = await connection();
+    const getUsersSql = 'SELECT * FROM user';
+    const [users] = await dbConnection.query(getUsersSql);
+    res.json(users);
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ message: 'Ha ocurrido un error en el servidor' });
+  }
+});
+
 // app.get('/user/list/:page', async (req, res) => {
+//   try {
+//     const { page } = req.params;
+//     const pageSize = 5; // Tamaño de la página, puedes ajustarlo según tus necesidades
+
+//     const dbConnection = await connection();
+//     const offset = (page - 1) * pageSize;
+//     const getUsersSql = `SELECT * FROM user LIMIT ${offset}, ${pageSize}`;
+//     const [users] = await dbConnection.query(getUsersSql);
+
+//     res.json(users);
+//   } catch (error) {
+//     console.error('Error:', error);
+//     res.status(500).json({ message: 'Ha ocurrido un error en el servidor' });
+//   }
+// });
+
+// app.get('/user/list/:page?', async (req, res) => {
 //   try {
 //     const dbConnection = await connection();
 //     const getUsersSql = 'SELECT * FROM user';
@@ -341,6 +388,8 @@ app.delete('/user/unfollow/:userId', async (req, res) => {
 //     const getUsersSql = `SELECT * FROM user LIMIT ${offset}, ${pageSize}`;
 //     const [users] = await dbConnection.query(getUsersSql);
 
+//     // console.log(users);
+
 //     res.json(users);
 //   } catch (error) {
 //     console.error('Error:', error);
@@ -348,17 +397,32 @@ app.delete('/user/unfollow/:userId', async (req, res) => {
 //   }
 // });
 
-app.get('/user/list/:page', async (req, res) => {
+////////////////Publicaciones de post//////////////
+app.post('/publication/save', async (req, res) => {
+  const newPublication = req.body;
+
+  // Obtén los valores de los campos de la publicación
+  const { text, file } = newPublication;
+  const created_at = new Date();
+  const user_id = req.user.id; // Obtén el ID del usuario desde la autenticación
+
+  // Crea la consulta SQL para insertar la publicación en la tabla
+  const query = 'INSERT INTO publication (text, file, created_at, user_id) VALUES (?, ?, ?, ?)';
+
   try {
-    const dbConnection = await connection();
-    const getUsersSql = 'SELECT * FROM user';
-    const [users] = await dbConnection.query(getUsersSql);
-    res.json(users);
+    // Ejecuta la consulta con los valores correspondientes
+    await connection.query(query, [text, file, created_at, user_id]);
+    // Si la inserción fue exitosa, envía una respuesta de éxito al cliente
+    res.json({ status: 'success', message: 'Publicación guardada exitosamente' });
   } catch (error) {
-    console.error('Error:', error);
-    res.status(500).json({ message: 'Ha ocurrido un error en el servidor' });
+    // Si ocurre un error, envía una respuesta de error al cliente
+    console.error(error);
+    res.status(500).json({ status: 'error', message: 'Error al guardar la publicación' });
   }
 });
+
+
+
 
 
 

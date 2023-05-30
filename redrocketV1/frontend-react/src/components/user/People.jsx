@@ -2,51 +2,62 @@ import React, { useEffect, useState } from "react";
 import { Global } from "../../helpers/Global";
 import { UserList } from "./UserList";
 
-
 export const People = () => {
-
   const [users, setUsers] = useState([]);
   const [page, setPage] = useState(1);
   const [more, setMore] = useState(true);
-  const [following, setFollowing] = useState([]);
+  const [followed, setFollowed] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loggedInUser, setLoggedInUser] = useState(null); // Agrega estado para el usuario logueado
 
   useEffect(() => {
     getUsers(1);
+    // Obtén el usuario logueado y guárdalo en el estado
+    const user = localStorage.getItem("userId");
+    setLoggedInUser(user);
   }, []);
 
+  // console.log(users);
+
   const getUsers = async (nextPage = 1) => {
-    //efecto de carga
     setLoading(true);
-    //Peticion de usuarios
-    const request = await fetch(Global.url + "user/list/" + nextPage, {
+
+    const request = await fetch(Global.url + "user/list/", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": localStorage.getItem("token"),
+        Authorization: localStorage.getItem("token"),
       },
     });
 
     const data = await request.json();
+    console.log(data);
+    setUsers(data);
 
-    //Crear un estado para poder listar los usuarios
-    if (data.users && data.status == "success") {
+    // console.log(data);
+
+    if (data.users && data.status === "success") {
       let newUsers = data.users;
+
+      
 
       if (users.length >= 1) {
         newUsers = [...users, ...data.users];
-      };
+      }
+
+      
 
       setUsers(newUsers);
-      setFollowing(data.user_following);
+      setFollowed(data.user_followed);
       setLoading(false);
 
-      //Paginacion, longitud de usuarios, cantidad de usuarios a mostrar en pagina
       if (users.length >= (data.total - data.users.length)) {
         setMore(false);
       }
     }
   };
+
+  const filteredUsers = users.filter((user) => user.id !== loggedInUser); // Filtra al usuario logueado
 
   return (
     <>
@@ -54,17 +65,18 @@ export const People = () => {
         <h1 className="content__title">Gente</h1>
       </header>
 
-      <UserList users={users} 
-                getUsers={getUsers} 
-                following={following}
-                setFollowing={setFollowing}
-                page={page}
-                setPage={setPage}
-                more={more}
-                loading={loading}
+      <UserList
+        users={filteredUsers} // Pasa la lista filtrada al componente UserList
+        // users={users}
+        getUsers={getUsers}
+        followed={followed}
+        setFollowed={setFollowed}
+        page={page}
+        setPage={setPage}
+        more={more}
+        loading={loading}
       />
 
-     
       <p></p>
     </>
   );

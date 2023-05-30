@@ -1,3 +1,4 @@
+import People from "./components/user/People";
 import { Routing } from "./router/Routing";
 
 
@@ -7,7 +8,7 @@ function App() {
       
       {/*Cargando toda la config de rutas */}
       <Routing/>
-          
+     
 
     </div>
   );
