@@ -1,13 +1,44 @@
-import React from "react";
+import React, { useState } from "react";
 import avatar from "../../../assets/img/user.png";
 import useAuth from "../../../hooks/useAuth";
 import { Global } from "../../../helpers/Global";
+import { useForm } from "../../../hooks/useForm";
 
 export const Sidebar = () => {
 
   const { auth, counters } = useAuth();
-  console.log(auth, counters);
-  
+  const {form, handleChanged} = useForm({});
+  const [stored, setStored] = useState("not_stored");
+
+  const savePublication = async(e) => {
+    e.preventDefael();
+
+    //Recoger datos del formulario
+    let newPublication = form;
+    newPublication.user = auth.id;
+
+    //Hacer la request para guardar en bd
+    const request = await fetch(global.url + "publication/save", {
+      method: "POST",
+      body: JSON.stringify(newPublication),
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": localStorage.getItem("token")
+      }
+    });
+    
+    const data = await request.json();
+
+    //Mostrar mensaje de exito o error
+    if(data.status = "success"){
+    setStored("stored");
+    }else{
+      setStored("error");
+    }
+    //subir imagen
+
+  }
+
 
   return (
     <aside className="layout__aside">
@@ -50,6 +81,8 @@ export const Sidebar = () => {
                 <span className="following__number">{counters.following}</span>
               </a>
             </div>
+
+
             <div className="stats__following">
               <a href="#" className="following__link">
                 <span className="following__title">Seguidores</span>
@@ -67,26 +100,37 @@ export const Sidebar = () => {
         </div>
 
         <div className="aside__container-form">
-          <form className="container-form__form-post">
+        {stored === "stored" && (
+          <strong className="alert alert-success">
+            Post publicado correctamente
+          </strong>
+        )}
+
+        {stored === "error" && (
+          <strong className="alert alert-danger">
+            Post no se publicado
+          </strong>
+        )}   
+          <form className="container-form__form-post" onSubmit={savePublication}>
+          
             <div className="form-post__inputs">
-              <label htmlFor="post" className="form-post__label">
+              <label htmlFor="text" className="form-post__label">
                 ¿Que estas pesando hoy?
               </label>
-              <textarea name="post" className="form-post__textarea"></textarea>
+              <textarea name="text" className="form-post__textarea" onChange={handleChanged} />
             </div>
 
             <div className="form-post__inputs">
               <label htmlFor="image" className="form-post__label">
                 Sube tu foto
               </label>
-              <input type="file" name="image" className="form-post__image" />
+              <input type="file" name="file0" id="file" className="form-post__image" />
             </div>
 
             <input
               type="submit"
               value="Enviar"
               className="form-post__btn-submit"
-              disabled
             />
           </form>
         </div>
