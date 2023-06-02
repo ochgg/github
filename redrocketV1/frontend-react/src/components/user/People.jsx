@@ -6,15 +6,28 @@ export const People = () => {
   const [users, setUsers] = useState([]);
   const [page, setPage] = useState(1);
   const [more, setMore] = useState(true);
-  const [followed, setFollowed] = useState([]);
+  const [following, setFollowing] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loggedInUser, setLoggedInUser] = useState(null); // Agrega estado para el usuario logueado
 
+  // useEffect(() => {
+  //   getUsers(1);
+  //   // Obtén el usuario logueado y guárdalo en el estado
+  //   const user = localStorage.getItem("userId");
+  //   setLoggedInUser(user);
+  // }, []);
+
   useEffect(() => {
-    getUsers(1);
+    getUsers();
     // Obtén el usuario logueado y guárdalo en el estado
     const user = localStorage.getItem("userId");
+    const savedFollowed = localStorage.getItem("following");
     setLoggedInUser(user);
+
+    // Si hay un estado guardado en el localStorage, cargarlo en el estado inicial
+  if (savedFollowed) {
+    setFollowing(JSON.parse(savedFollowed));
+  }
   }, []);
 
   // console.log(users);
@@ -34,7 +47,7 @@ export const People = () => {
     console.log(data);
     setUsers(data);
 
-    // console.log(data);
+     console.log(data);
 
     if (data.users && data.status === "success") {
       let newUsers = data.users;
@@ -48,7 +61,7 @@ export const People = () => {
       
 
       setUsers(newUsers);
-      setFollowed(data.user_followed);
+      setFollowing(data.user_following);
       setLoading(false);
 
       if (users.length >= (data.total - data.users.length)) {
@@ -69,8 +82,8 @@ export const People = () => {
         users={filteredUsers} // Pasa la lista filtrada al componente UserList
         // users={users}
         getUsers={getUsers}
-        followed={followed}
-        setFollowed={setFollowed}
+        following={following}
+        setFollowing={setFollowing}
         page={page}
         setPage={setPage}
         more={more}
