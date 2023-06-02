@@ -6,8 +6,8 @@ import useAuth from "../../hooks/useAuth";
 export const UserList = ({
   users,
   getUsers,
-  followed,
-  setFollowed,
+  following,
+  setFollowing,
   page,
   setPage,
   more,
@@ -41,8 +41,8 @@ export const UserList = ({
   //   }
   // };
 
-  const follow = async (userId, followedId) => {
-    if (!userId || !followedId) {
+  const follow = async (userId, followingId) => {
+    if (!userId || !followingId) {
       console.error('Los valores de userId y followedId no pueden ser nulos');
       return;
     }
@@ -50,19 +50,20 @@ export const UserList = ({
     try {
       const request = await fetch(Global.url + `user/follow/${userId}`, {
         method: 'POST',
-        body: JSON.stringify({ followed: followedId }),
+        body: JSON.stringify({ following: followingId }),
         headers: {
           'Content-Type': 'application/json',
-          Authorization: localStorage.getItem('token'),
+          Authorization: localStorage.getItem("token"),
         },
       });
   
       const data = await request.json();
+      console.log (data)
   
-      if (data.status === 'success') {
-        // Actualizar estado de followed, agregando un nuevo follow
-        setFollowed([...followed, followedId]);
-      }
+       if (data.status == "success") {
+      //   // Actualizar estado de followed, agregando un nuevo follow
+         setFollowing([...following, userId]);
+       }
     } catch (error) {
       console.error('Error:', error);
       // Manejar el error adecuadamente
@@ -85,10 +86,11 @@ export const UserList = ({
     const data = await request.json();
 
     if (data.status === "success") {
-      let filterFollowing = followed.filter(
+      let filterFollowing = following.filter(
         (followingUserId) => userId !== followingUserId
+        //(followingId) => followingId !== userId
       );
-      setFollowed(filterFollowing);
+      setFollowing(filterFollowing);
     }
   };
 
@@ -131,21 +133,61 @@ export const UserList = ({
               </div>
             </div>
 
-            {user.id !== auth.id && (
+            {/* {user.id !== auth.id && (
               <div className="post__buttons">
-                {!followed.includes(user.id) ? (
-                  <button
+                {!followed.includes(user._id)? (
+                  <a
                     className="post__button post__button--green"
                     onClick={() => follow(user.id)}
+                  >
+                    Seguir
+                  </a>
+                ) : (
+                  <a
+                    className="post__button"
+                    onClick={() => unfollow(user.id)}
+                  >
+                    Dejar de seguir
+                  </a>
+                )}
+              </div>
+            )} */}
+
+            {/* <div className="post_buttons">
+              {!following.includes(user.id) &&
+              <a href="#" className="post__button post__button--green"
+                onClick={() => follow(user.id)}>
+                Seguir
+              </a>
+              }
+
+              {following.includes(user.id) &&
+                <a href="#" className="post__button"
+                  onClick={() => unfollow(user.id)}>
+                  Dejar de Seguir
+
+                </a>
+              }
+
+            </div> */}
+
+            {user.id !== auth.id && (
+              <div className="post_buttons">
+                {!following.includes(user.id) ? (
+                  <button
+                    //href="#"
+                    className="post__button post__button--green"
+                    onClick={() => follow(user.id, auth.id)}
                   >
                     Seguir
                   </button>
                 ) : (
                   <button
+                    //href="#"
                     className="post__button"
                     onClick={() => unfollow(user.id)}
                   >
-                    Dejar de seguir
+                    Dejar de Seguir
                   </button>
                 )}
               </div>

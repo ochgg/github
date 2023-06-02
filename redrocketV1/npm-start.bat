@@ -1,2 +1,2 @@
-start cmd.exe /k "cd E:\github\redrocketV1\api-rest-redrocket && npm start"
-start cmd.exe /k "cd E:\github\redrocketV1\frontend-react && npm start"
+start cmd.exe /k "cd "C:\Users\melok\OneDrive\Escritorio\redrokect-react\github\redrocketV1\api-rest-redrocket" && npm start"
+start cmd.exe /k "cd "C:\Users\melok\OneDrive\Escritorio\redrokect-react\github\redrocketV1\frontend-react" && npm start"

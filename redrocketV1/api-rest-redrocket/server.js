@@ -258,12 +258,12 @@ app.get('/user/counters/:id', async (req, res) => {
     const publicationCount = publicationsResult[0].publicationCount;
 
     /////////// Obtener el número de seguidores del usuario/////////////
-    const getFollowersSql = 'SELECT COUNT(*) AS followerCount FROM follow WHERE followed_id = ?';
+    const getFollowersSql = 'SELECT COUNT(*) AS followerCount FROM follow WHERE user_id = ?';
     const [followersResult] = await dbConnection.query(getFollowersSql, [id]);
     const followerCount = followersResult[0].followerCount;
 
     ////// Obtener el número de usuarios seguidos por el usuario/////////
-    const getFollowingSql = 'SELECT COUNT(*) AS followingCount FROM follow WHERE user_id = ?';
+    const getFollowingSql = 'SELECT COUNT(*) AS followingCount FROM follow WHERE followed_id = ?';
     const [followingResult] = await dbConnection.query(getFollowingSql, [id]);
     const followingCount = followingResult[0].followingCount;
 
@@ -303,12 +303,12 @@ app.get('/user/counters/:id', async (req, res) => {
 
 app.post('/user/follow/:id', async (req, res) => {
   const { id } = req.params;
-  const { followed } = req.body;
+  const { following } = req.body;
 
   try {
     const dbConnection = await connection();
     const followUserSql = 'INSERT INTO follow (user_id, followed_id) VALUES (?, ?)';
-    await dbConnection.query(followUserSql, [id, followed]);
+    await dbConnection.query(followUserSql, [id, following]);
 
     res.json({ status: 'success', message: 'Has seguido al usuario correctamente.' });
   } catch (error) {
