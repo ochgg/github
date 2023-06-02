@@ -1,9 +1,9 @@
 /*ESTILOS GENERALES*/
 :root {
     --color-general-text: #333;
-    --color-backgroud-navbar: #3785e5;
+    --color-backgroud-navbar: #55868C;
     --color-text-navbar: white;
-    --color-hover-navbar: #1756cc;
+    --color-hover-navbar: rgb(61, 80, 84);
 
     --color-border-headers: #eee;
 
@@ -38,6 +38,7 @@
 
 
 html {
+    background-color: #e6f2f2;
     width: 100%;
     height: 100%;
     font-size: 10px;
