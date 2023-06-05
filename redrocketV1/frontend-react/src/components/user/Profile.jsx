@@ -4,6 +4,7 @@ import { getProfile } from "../../helpers/getProfile";
 import { Link, useParams } from "react-router-dom";
 import { Global } from "../../helpers/Global";
 import useAuth from "../../hooks/useAuth";
+import ReactTimeAgo from "react-time-ago";
 
 export const Profile = () => {
   const { auth } = useAuth();
@@ -213,7 +214,7 @@ export const Profile = () => {
                     </a>
                     <span className="user-info__divider"> | </span>
                     <a href="#" className="user-info__create-date">
-                      {publications.created_at}
+                      <ReactTimeAgo date={publications.created_at} locale="es-Es" />
                     </a>
                   </div>
 

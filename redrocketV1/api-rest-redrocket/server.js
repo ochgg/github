@@ -428,7 +428,7 @@ app.get('/user/publications/:userId', async (req, res) => {
   const { userId } = req.params;
   try {
     const dbConnection = await connection();
-    const getPublicationsSql = 'SELECT * FROM publication WHERE user_id = ?';
+    const getPublicationsSql = 'SELECT * FROM publication WHERE user_id = ? ORDER BY created_at DESC';
     const [publications] = await dbConnection.query(getPublicationsSql, [userId]);
     
     if (publications.length === 0) {
