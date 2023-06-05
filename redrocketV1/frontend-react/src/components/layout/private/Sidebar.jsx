@@ -3,6 +3,8 @@ import avatar from "../../../assets/img/user.png";
 import useAuth from "../../../hooks/useAuth";
 import { Global } from "../../../helpers/Global";
 import { useForm } from "../../../hooks/useForm";
+import { Link } from "react-router-dom";
+import { UserList } from "../../user/UserList";
 
 export const Sidebar = () => {
 
@@ -11,14 +13,15 @@ export const Sidebar = () => {
   const [stored, setStored] = useState("not_stored");
 
   const savePublication = async(e) => {
-    e.preventDefael();
+    e.preventDefault();
 
     //Recoger datos del formulario
     let newPublication = form;
-    newPublication.user = auth.id;
+    // newPublication.user = auth.id;
+    
 
     //Hacer la request para guardar en bd
-    const request = await fetch(global.url + "publication/save", {
+    const request = await fetch(Global.url + "publication/save/:id", {
       method: "POST",
       body: JSON.stringify(newPublication),
       headers: {
@@ -30,7 +33,7 @@ export const Sidebar = () => {
     const data = await request.json();
 
     //Mostrar mensaje de exito o error
-    if(data.status = "success"){
+    if(data.status === "success") {
     setStored("stored");
     }else{
       setStored("error");
@@ -67,48 +70,50 @@ export const Sidebar = () => {
             </div>
 
             <div className="general-info__container-names">
-              <a href="#" className="container-names__name">
+            <Link to={"/social/perfil/"+auth.id} className="container-names__name">
                 {auth.name} {auth.surname}
-              </a>
+              </Link>
               <p className="container-names__nickname">{auth.nick}</p>
+
             </div>
+            
           </div>
 
           <div className="profile-info__stats">
             <div className="stats__following">
-              <a href="#" className="following__link">
+              <Link to={"/social/siguiendo/"+auth.id} className="following__link">
                 <span className="following__title">Siguiendo</span>
                 <span className="following__number">{counters.following}</span>
-              </a>
+              </Link>
             </div>
 
 
             <div className="stats__following">
-              <a href="#" className="following__link">
+              <Link to={"/social/siguidores/"+auth.id} className="following__link">
                 <span className="following__title">Seguidores</span>
                 <span className="following__number">{counters.followed}</span>
-              </a>
+              </Link>
             </div>
 
             <div className="stats__following">
-              <a href="#" className="following__link">
+            <Link to={"/social/perfil/"+auth.id} className="following__link">
                 <span className="following__title">Publicaciones</span>
                 <span className="following__number">{counters.publications}</span>
-              </a>
+              </Link>
             </div>
           </div>
         </div>
 
         <div className="aside__container-form">
-        {stored === "stored" && (
+        {stored == "stored" && (
           <strong className="alert alert-success">
             Post publicado correctamente
           </strong>
         )}
 
-        {stored === "error" && (
+        {stored == "error" && (
           <strong className="alert alert-danger">
-            Post no se publicado
+            Post no se ha publicado
           </strong>
         )}   
           <form className="container-form__form-post" onSubmit={savePublication}>
@@ -121,10 +126,10 @@ export const Sidebar = () => {
             </div>
 
             <div className="form-post__inputs">
-              <label htmlFor="image" className="form-post__label">
+              <label htmlFor="file" className="form-post__label">
                 Sube tu foto
               </label>
-              <input type="file" name="file0" id="file" className="form-post__image" />
+              <input type="text" name="file0" id="file" className="form-post__image" />
             </div>
 
             <input

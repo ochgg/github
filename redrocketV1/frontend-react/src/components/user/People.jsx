@@ -10,27 +10,18 @@ export const People = () => {
   const [loading, setLoading] = useState(true);
   const [loggedInUser, setLoggedInUser] = useState(null); // Agrega estado para el usuario logueado
 
-  // useEffect(() => {
-  //   getUsers(1);
-  //   // Obtén el usuario logueado y guárdalo en el estado
-  //   const user = localStorage.getItem("userId");
-  //   setLoggedInUser(user);
-  // }, []);
-
   useEffect(() => {
     getUsers();
     // Obtén el usuario logueado y guárdalo en el estado
     const user = localStorage.getItem("userId");
-    const savedFollowed = localStorage.getItem("following");
+    const savedFollowing = localStorage.getItem("following");
     setLoggedInUser(user);
 
     // Si hay un estado guardado en el localStorage, cargarlo en el estado inicial
-  if (savedFollowed) {
-    setFollowing(JSON.parse(savedFollowed));
-  }
+    if (savedFollowing) {
+      setFollowing(JSON.parse(savedFollowing));
+    }
   }, []);
-
-  // console.log(users);
 
   const getUsers = async (nextPage = 1) => {
     setLoading(true);
@@ -47,31 +38,26 @@ export const People = () => {
     console.log(data);
     setUsers(data);
 
-     console.log(data);
-
     if (data.users && data.status === "success") {
       let newUsers = data.users;
-
-      
 
       if (users.length >= 1) {
         newUsers = [...users, ...data.users];
       }
 
-      
-
       setUsers(newUsers);
       setFollowing(data.user_following);
       setLoading(false);
 
-      if (users.length >= (data.total - data.users.length)) {
+      if (users.length >= data.total - data.users.length) {
         setMore(false);
       }
     }
   };
 
-  const filteredUsers = users.filter((user) => user.id !== loggedInUser); // Filtra al usuario logueado
-
+  const filteredUsers = users.filter((user) => user._id !== loggedInUser); // Filtra al usuario logueado
+  console.log(following)
+  
   return (
     <>
       <header className="content__header">
@@ -79,8 +65,7 @@ export const People = () => {
       </header>
 
       <UserList
-        users={filteredUsers} // Pasa la lista filtrada al componente UserList
-        // users={users}
+        users={filteredUsers}
         getUsers={getUsers}
         following={following}
         setFollowing={setFollowing}
@@ -93,4 +78,5 @@ export const People = () => {
       <p></p>
     </>
   );
+  
 };
