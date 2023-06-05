@@ -186,6 +186,7 @@ export const Profile = () => {
           return (
             <article className="posts__post">
               <div className="post__container">
+                <div>
                 <div className="post__image-user">
                   <Link
                     to={"/social/perfil/publications/" + user.id}
@@ -206,7 +207,7 @@ export const Profile = () => {
                     )}
                   </Link>
                 </div>
-
+                </div>
                 <div className="post__body">
                   <div className="post__user-info">
                     <a href="#" className="user-info__name">
