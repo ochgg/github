@@ -4,7 +4,7 @@ import { UserList } from "./UserList";
 
 export const People = () => {
   const [users, setUsers] = useState([]);
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState();
   const [more, setMore] = useState(true);
   const [following, setFollowing] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -23,7 +23,7 @@ export const People = () => {
     }
   }, []);
 
-  const getUsers = async (nextPage = 1) => {
+  const getUsers = async () => {
     setLoading(true);
 
     const request = await fetch(Global.url + "user/list/", {
@@ -35,8 +35,9 @@ export const People = () => {
     });
 
     const data = await request.json();
-    console.log(data);
     setUsers(data);
+    console.log(data);
+    
 
     if (data.users && data.status === "success") {
       let newUsers = data.users;
@@ -55,7 +56,7 @@ export const People = () => {
     }
   };
 
-  const filteredUsers = users.filter((user) => user._id !== loggedInUser); // Filtra al usuario logueado
+  const filteredUsers = users.filter((user) => user.id !== loggedInUser); // Filtra al usuario logueado
   console.log(following)
   
   return (
@@ -69,10 +70,6 @@ export const People = () => {
         getUsers={getUsers}
         following={following}
         setFollowing={setFollowing}
-        page={page}
-        setPage={setPage}
-        more={more}
-        loading={loading}
       />
 
       <p></p>

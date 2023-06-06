@@ -284,6 +284,19 @@ app.get('/user/counters/:id', async (req, res) => {
   }
 });
 
+/////////// Ruta para obtener la lista de usuarios/////////////////
+app.get('/user/list', async (req, res) => {
+  try {
+    const dbConnection = await connection();
+    const getUsersSql = 'SELECT * FROM user';
+    const [users] = await dbConnection.query(getUsersSql);
+    res.json(users);
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ message: 'Ha ocurrido un error en el servidor' });
+  }
+});
+
 
 /////////////// Ruta para seguir a un usuario////////////////////////////
 // app.post('/user/follow/:id', async (req, res) => {
@@ -308,7 +321,7 @@ app.post('/user/follow/:id', async (req, res) => {
 
   try {
     const dbConnection = await connection();
-    const followUserSql = 'INSERT INTO follow (user_id, followed_id) VALUES (?, ?)';
+    const followUserSql = 'INSERT INTO follow (followed_id, user_id) VALUES (?, ?)';
     await dbConnection.query(followUserSql, [id, following]);
 
     res.json({ status: 'success', message: 'Has seguido al usuario correctamente.' });
@@ -320,36 +333,26 @@ app.post('/user/follow/:id', async (req, res) => {
 
 
 
+
 ///////////// Ruta para dejar de seguir a un usuario///////////////////
-app.delete('/user/unfollow/:userId', async (req, res) => {
-  const { userId } = req.params;
-  const { followingId } = req.body;
+app.delete('/user/unfollow/:id', async (req, res) => {
+  const { id } = req.params;
+  const { followerId } = req.body; 
 
   try {
     const dbConnection = await connection();
-    const unfollowUserSql = 'DELETE FROM follow WHERE user_id = ? AND followed_id = ?';
-    await dbConnection.query(unfollowUserSql, [followingId, userId]);
+    const unfollowUserSql = 'DELETE FROM follow WHERE followed_id = ? AND user_id  = ?';
+    await dbConnection.query(unfollowUserSql, [id, followerId]); // Cambiar el orden de los parámetros
 
     res.json({ message: 'Has dejado de seguir al usuario correctamente.' });
   } catch (error) {
     console.error('Error:', error);
     res.status(500).json({ message: 'Ha ocurrido un error en el servidor' });
-    
   }
 });
 
-/////////// Ruta para obtener la lista de usuarios/////////////////
-app.get('/user/list', async (req, res) => {
-  try {
-    const dbConnection = await connection();
-    const getUsersSql = 'SELECT * FROM user';
-    const [users] = await dbConnection.query(getUsersSql);
-    res.json(users);
-  } catch (error) {
-    console.error('Error:', error);
-    res.status(500).json({ message: 'Ha ocurrido un error en el servidor' });
-  }
-});
+
+
 
 // app.get('/user/list/:page', async (req, res) => {
 //   try {
