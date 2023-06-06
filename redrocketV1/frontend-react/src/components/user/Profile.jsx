@@ -129,13 +129,12 @@ export const Profile = () => {
               alt="Foto de perfil"
             />
           </div>
-
+        
           <div className="general-info__container-names">
             <div className="container-names__name">
               <h1>
-                {publications.name} {user.surname}
+                {user.name} {user.surname}
               </h1>
-
               {user.id != auth.id &&
                 (iFollow ? (
                   <button className="content__button content__button--right post__button">
@@ -184,7 +183,7 @@ export const Profile = () => {
       <div className="content__posts">
         {publications.map((publications) => {
           return (
-            <article className="posts__post">
+            <article className="posts__post" key={publications.id}>
               <div className="post__container">
                 <div>
                 <div className="post__image-user">
