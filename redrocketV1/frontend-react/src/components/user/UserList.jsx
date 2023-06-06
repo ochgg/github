@@ -3,6 +3,7 @@ import avatar from "../../assets/img/user.png";
 import { Global } from "../../helpers/Global";
 import useAuth from "../../hooks/useAuth";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 export const UserList = ({ users, getUsers, page, setPage, more, loading, }) => {
   const { auth } = useAuth();
@@ -89,8 +90,9 @@ export const UserList = ({ users, getUsers, page, setPage, more, loading, }) => 
         {users.map((user) => (
           <article className="posts__post" key={user.id}>
             <div className="post__container">
+
               <div className="post__image-user">
-                <a href="#" className="post__image-link">
+                <Link to={"/social/perfil/"+user.id} className="post__image-link">
                   {user.image !== "defaul.png" ? (
                     <img
                       src={user.image}
@@ -104,61 +106,23 @@ export const UserList = ({ users, getUsers, page, setPage, more, loading, }) => 
                       alt="Foto de perfil"
                     />
                   )}
-                </a>
+                </Link>
               </div>
 
               <div className="post__body">
                 <div className="post__user-info">
-                  <a href="#" className="user-info__name">
+                <Link to={"/social/perfil/"+user.id} className="user-info__name">
                     {user.name} {user.surname}
-                  </a>
+                </Link>
                   <span className="user-info__divider"> | </span>
-                  <a href="#" className="user-info__create-date">
+                  <Link to={"/social/perfil/"+user.id} className="user-info__create-date">
                     {user.created_at}
-                  </a>
+                  </Link>
                 </div>
 
                 <h4 className="post__content">{user.conocimiento_extra}</h4>
               </div>
             </div>
-
-            {/* {user.id !== auth.id && (
-              <div className="post__buttons">
-                {!followed.includes(user._id)? (
-                  <a
-                    className="post__button post__button--green"
-                    onClick={() => follow(user.id)}
-                  >
-                    Seguir
-                  </a>
-                ) : (
-                  <a
-                    className="post__button"
-                    onClick={() => unfollow(user.id)}
-                  >
-                    Dejar de seguir
-                  </a>
-                )}
-              </div>
-            )} */}
-
-            {/* <div className="post_buttons">
-              {!following.includes(user.id) &&
-              <a href="#" className="post__button post__button--green"
-                onClick={() => follow(user.id)}>
-                Seguir
-              </a>
-              }
-
-              {following.includes(user.id) &&
-                <a href="#" className="post__button"
-                  onClick={() => unfollow(user.id)}>
-                  Dejar de Seguir
-
-                </a>
-              }
-
-            </div> */}
 
             {user.id !== auth.id && (
               <div className="post_buttons">
@@ -170,8 +134,8 @@ export const UserList = ({ users, getUsers, page, setPage, more, loading, }) => 
                     Seguir
                   </button>
                 ) : (
+                  
                   <button
-                    //href="#"
                     className="post__button"
                     onClick={() => unfollow(user.id)}
                   >
