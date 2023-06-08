@@ -3,6 +3,7 @@ import avatar from "../../../assets/img/user.png";
 import { NavLink } from "react-router-dom";
 import useAuth from "../../../hooks/useAuth";
 
+
 export const Nav = () => {
   const { auth } = useAuth();
 
