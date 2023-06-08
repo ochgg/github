@@ -27,14 +27,14 @@ export const Nav = () => {
         <li className="menu-list__item">
           <NavLink to="/social/gente" className="menu-list__link">
             <i className="fa-solid fa-user"></i>
-            <span className="menu-list__title">Gente</span>
+            <span className="menu-list__title">Personas</span>
           </NavLink>
         </li>
       </ul>
 
       <ul className="container-lists__list-end">
         <li className="list-end__item">
-          <a href="#" className="list-end__link-image">
+        <NavLink to={"/social/perfil/"+auth.id} className="list-end__link-image">
           {auth.image != "defaul.png" && (
               <img
                 src={auth.image}
@@ -49,12 +49,12 @@ export const Nav = () => {
                 alt="Foto de perfil"
               />
             )}
-          </a>
+          </NavLink>
         </li>
         <li className="list-end__item">
-          <a href="#" className="list-end__link">
+          <NavLink to={"/social/perfil/"+auth.id} className="list-end__link">
             <span className="list-end__name">{auth.nick}</span>
-          </a>
+          </NavLink>
         </li>
 
         <li className="list-end__item">

@@ -1,19 +1,13 @@
-import React from "react";
+import React, { useEffect } from "react";
 import avatar from "../../assets/img/user.png";
 import { Global } from "../../helpers/Global";
 import useAuth from "../../hooks/useAuth";
+import { useState } from "react";
+import { Link } from "react-router-dom";
 
-export const UserList = ({
-  users,
-  getUsers,
-  following,
-  setFollowing,
-  page,
-  setPage,
-  more,
-  loading,
-}) => {
+export const UserList = ({ users, getUsers, page, setPage, more, loading, }) => {
   const { auth } = useAuth();
+  const [following, setFollowing] = useState([]);
 
   const nextPage = () => {
     let next = page + 1;
@@ -21,25 +15,19 @@ export const UserList = ({
     getUsers(next);
   };
 
-  // const follow = async (userId) => {
-  //   const request = await fetch(Global.url + "user/follow/", {
-  //     method: "POST",
-  //     body: JSON.stringify({ followed: userId }),
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //       Authorization: localStorage.getItem("token"),
-  //     },
-  //   });
+  useEffect(() => {
+    // Cargar el estado de seguimiento desde el localStorage al montar el componente
+    const savedFollowing = localStorage.getItem("following");
+    if (savedFollowing) {
+      setFollowing(JSON.parse(savedFollowing));
+    }
+  }, []);
 
-  //   const data = await request.json();
+  useEffect(() => {
+    // Guardar el estado de seguimiento en el localStorage cuando cambie
+    localStorage.setItem("following", JSON.stringify(following));
+  }, [following]);  
 
-  //   //Cuando todo este corectocto
-  //   if (data.status === "success") {
-
-  //   //Actualizar estado de follored, agregando un nuevo follwd
-  //     setFollowed([...followed, userId]);
-  //   }
-  // };
 
   const follow = async (userId, followingId) => {
     if (!userId || !followingId) {
@@ -71,28 +59,30 @@ export const UserList = ({
   };
   
   
-  
-
-
   const unfollow = async (userId) => {
-    const request = await fetch(Global.url + "user/unfollow/" + userId, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: localStorage.getItem("token"),
-      },
-    });
-
-    const data = await request.json();
-
-    if (data.status === "success") {
-      let filterFollowing = following.filter(
-        (followingUserId) => userId !== followingUserId
-        //(followingId) => followingId !== userId
-      );
-      setFollowing(filterFollowing);
+    try {
+      const request = await fetch(Global.url + `user/unfollow/${userId}`, {
+        method: 'DELETE',
+        body: JSON.stringify({ followerId: auth.id }), // Cambiar 'following' a 'followerId'
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: localStorage.getItem("token"),
+        },
+      });
+  
+      const data = await request.json();
+  
+      if (data.message === 'Has dejado de seguir al usuario correctamente.') {
+        const filterFollowing = following.filter((followingId) => userId !== followingId);
+        setFollowing(filterFollowing);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      // Manejar el error adecuadamente
     }
   };
+  
+  
 
   return (
     <>
@@ -100,8 +90,9 @@ export const UserList = ({
         {users.map((user) => (
           <article className="posts__post" key={user.id}>
             <div className="post__container">
+
               <div className="post__image-user">
-                <a href="#" className="post__image-link">
+                <Link to={"/social/perfil/"+user.id} className="post__image-link">
                   {user.image !== "defaul.png" ? (
                     <img
                       src={user.image}
@@ -115,75 +106,36 @@ export const UserList = ({
                       alt="Foto de perfil"
                     />
                   )}
-                </a>
+                </Link>
               </div>
 
               <div className="post__body">
                 <div className="post__user-info">
-                  <a href="#" className="user-info__name">
+                <Link to={"/social/perfil/"+user.id} className="user-info__name">
                     {user.name} {user.surname}
-                  </a>
+                </Link>
                   <span className="user-info__divider"> | </span>
-                  <a href="#" className="user-info__create-date">
+                  <Link to={"/social/perfil/"+user.id} className="user-info__create-date">
                     {user.created_at}
-                  </a>
+                  </Link>
                 </div>
 
                 <h4 className="post__content">{user.conocimiento_extra}</h4>
               </div>
             </div>
 
-            {/* {user.id !== auth.id && (
-              <div className="post__buttons">
-                {!followed.includes(user._id)? (
-                  <a
-                    className="post__button post__button--green"
-                    onClick={() => follow(user.id)}
-                  >
-                    Seguir
-                  </a>
-                ) : (
-                  <a
-                    className="post__button"
-                    onClick={() => unfollow(user.id)}
-                  >
-                    Dejar de seguir
-                  </a>
-                )}
-              </div>
-            )} */}
-
-            {/* <div className="post_buttons">
-              {!following.includes(user.id) &&
-              <a href="#" className="post__button post__button--green"
-                onClick={() => follow(user.id)}>
-                Seguir
-              </a>
-              }
-
-              {following.includes(user.id) &&
-                <a href="#" className="post__button"
-                  onClick={() => unfollow(user.id)}>
-                  Dejar de Seguir
-
-                </a>
-              }
-
-            </div> */}
-
             {user.id !== auth.id && (
               <div className="post_buttons">
                 {!following.includes(user.id) ? (
                   <button
-                    //href="#"
                     className="post__button post__button--green"
                     onClick={() => follow(user.id, auth.id)}
                   >
                     Seguir
                   </button>
                 ) : (
+                  
                   <button
-                    //href="#"
                     className="post__button"
                     onClick={() => unfollow(user.id)}
                   >

@@ -1,4 +1,5 @@
 const express = require("express");
+const router = express.Router();
 const mysql = require("mysql2/promise");
 const connection = require("./database/connection");
 const cors = require("cors");
@@ -258,12 +259,12 @@ app.get('/user/counters/:id', async (req, res) => {
     const publicationCount = publicationsResult[0].publicationCount;
 
     /////////// Obtener el número de seguidores del usuario/////////////
-    const getFollowersSql = 'SELECT COUNT(*) AS followerCount FROM follow WHERE user_id = ?';
+    const getFollowersSql = 'SELECT COUNT(*) AS followerCount FROM follow WHERE followed_id = ?';
     const [followersResult] = await dbConnection.query(getFollowersSql, [id]);
     const followerCount = followersResult[0].followerCount;
 
     ////// Obtener el número de usuarios seguidos por el usuario/////////
-    const getFollowingSql = 'SELECT COUNT(*) AS followingCount FROM follow WHERE followed_id = ?';
+    const getFollowingSql = 'SELECT COUNT(*) AS followingCount FROM follow WHERE user_id = ?';
     const [followingResult] = await dbConnection.query(getFollowingSql, [id]);
     const followingCount = followingResult[0].followingCount;
 
@@ -277,6 +278,19 @@ app.get('/user/counters/:id', async (req, res) => {
       status: 'success',
       counters,
     });
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ message: 'Ha ocurrido un error en el servidor' });
+  }
+});
+
+/////////// Ruta para obtener la lista de usuarios/////////////////
+app.get('/user/list', async (req, res) => {
+  try {
+    const dbConnection = await connection();
+    const getUsersSql = 'SELECT * FROM user';
+    const [users] = await dbConnection.query(getUsersSql);
+    res.json(users);
   } catch (error) {
     console.error('Error:', error);
     res.status(500).json({ message: 'Ha ocurrido un error en el servidor' });
@@ -307,7 +321,7 @@ app.post('/user/follow/:id', async (req, res) => {
 
   try {
     const dbConnection = await connection();
-    const followUserSql = 'INSERT INTO follow (user_id, followed_id) VALUES (?, ?)';
+    const followUserSql = 'INSERT INTO follow (followed_id, user_id) VALUES (?, ?)';
     await dbConnection.query(followUserSql, [id, following]);
 
     res.json({ status: 'success', message: 'Has seguido al usuario correctamente.' });
@@ -319,15 +333,16 @@ app.post('/user/follow/:id', async (req, res) => {
 
 
 
+
 ///////////// Ruta para dejar de seguir a un usuario///////////////////
-app.delete('/user/unfollow/:userId', async (req, res) => {
-  const { userId } = req.params;
-  const { followerId } = req.body;
+app.delete('/user/unfollow/:id', async (req, res) => {
+  const { id } = req.params;
+  const { followerId } = req.body; 
 
   try {
     const dbConnection = await connection();
-    const unfollowUserSql = 'DELETE FROM follow WHERE user_id = ? AND followed_id = ?';
-    await dbConnection.query(unfollowUserSql, [followerId, userId]);
+    const unfollowUserSql = 'DELETE FROM follow WHERE followed_id = ? AND user_id  = ?';
+    await dbConnection.query(unfollowUserSql, [id, followerId]); // Cambiar el orden de los parámetros
 
     res.json({ message: 'Has dejado de seguir al usuario correctamente.' });
   } catch (error) {
@@ -336,18 +351,8 @@ app.delete('/user/unfollow/:userId', async (req, res) => {
   }
 });
 
-/////////// Ruta para obtener la lista de usuarios/////////////////
-app.get('/user/list', async (req, res) => {
-  try {
-    const dbConnection = await connection();
-    const getUsersSql = 'SELECT * FROM user';
-    const [users] = await dbConnection.query(getUsersSql);
-    res.json(users);
-  } catch (error) {
-    console.error('Error:', error);
-    res.status(500).json({ message: 'Ha ocurrido un error en el servidor' });
-  }
-});
+
+
 
 // app.get('/user/list/:page', async (req, res) => {
 //   try {
@@ -398,11 +403,11 @@ app.get('/user/list', async (req, res) => {
 // });
 
 ////////////////Publicaciones de post//////////////
-app.post('/publication/save', async (req, res) => {
-  const newPublication = req.body;
+app.post('/publications/save', async (req, res) => {
+  const newPublications = req.body;
 
   // Obtén los valores de los campos de la publicación
-  const { text, file } = newPublication;
+  const { text, file } = newPublications;
   const created_at = new Date();
   const user_id = req.user.id; // Obtén el ID del usuario desde la autenticación
 
@@ -420,6 +425,100 @@ app.post('/publication/save', async (req, res) => {
     res.status(500).json({ status: 'error', message: 'Error al guardar la publicación' });
   }
 });
+
+///////////////Consulta publicaciones usuarios///////////////
+app.get('/user/publications/:userId', async (req, res) => {
+  const { userId } = req.params;
+  try {
+    const dbConnection = await connection();
+    const getPublicationsSql = 'SELECT * FROM publication WHERE user_id = ? ORDER BY created_at DESC';
+    const [publications] = await dbConnection.query(getPublicationsSql, [userId]);
+    
+    if (publications.length === 0) {
+      return res.status(404).json({ message: 'La publicación no existe' });
+    }
+    
+    res.json({ status: 'success', publications });
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ message: 'Ha ocurrido un error en el servidor' });
+  }
+});
+
+///////////////Borrar publicacion//////////////
+app.delete('/user/publications/remove/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const dbConnection = await connection();
+    const deletePublicationSql = 'DELETE FROM publication WHERE id = ?';
+    const [result] = await dbConnection.query(deletePublicationSql, [id]);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'La publicación no existe' });
+    }
+
+    res.json({ status: 'success' });
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ message: 'Ha ocurrido un error en el servidor' });
+  }
+});
+
+
+
+
+////////// Ruta para obtener los usuarios seguidos por un usuario ///////////////
+app.get('/user/follow/following/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const dbConnection = await connection();
+    const getFollowingSql = 'SELECT followed_id FROM follow WHERE user_id = ?';
+    const [followingResult] = await dbConnection.query(getFollowingSql, [id]);
+
+    // Obtener los IDs de los usuarios seguidos
+    const followingIds = followingResult.map((row) => row.followed_id);
+
+    // Obtener los datos de los usuarios seguidos
+    const getFollowingUsersSql = 'SELECT * FROM user WHERE id IN (?)';
+    const [followingUsersResult] = await dbConnection.query(getFollowingUsersSql, [followingIds]);
+
+    res.json({
+      status: 'success',
+      followingUsers: followingUsersResult,
+    });
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ message: 'Ha ocurrido un error en el servidor' });
+  }
+});
+
+////////// Ruta para obtener los seguidores de un usuario ///////////////
+app.get('/user/follow/followers/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const dbConnection = await connection();
+    const getFollowingSql = 'SELECT user_id FROM follow WHERE followed_id = ?';
+    const [followingResult] = await dbConnection.query(getFollowingSql, [id]);
+
+    // Obtener los IDs de los usuarios seguidos
+    const followingIds = followingResult.map((row) => row.user_id);
+
+    // Obtener los datos de los usuarios seguidos
+    const getFollowingUsersSql = 'SELECT * FROM user WHERE id IN (?)';
+    const [followingUsersResult] = await dbConnection.query(getFollowingUsersSql, [followingIds]);
+
+    res.json({
+      status: 'success',
+      followingUsers: followingUsersResult,
+    });
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ message: 'Ha ocurrido un error en el servidor' });
+  }
+});
+
 
 
 
