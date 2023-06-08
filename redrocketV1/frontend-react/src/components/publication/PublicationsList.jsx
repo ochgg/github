@@ -31,7 +31,7 @@ export const PublicationsList = ({ publications, getPublications }) => {
       <div className="content__posts">
         {publications.map((publication) => {
           return (
-            <article className="posts__post" key={publication.id}>
+            <article className="posts__post" key={publications.id}>
               <div className="post__container">
                 <div>
                   <div className="post__image-user">
