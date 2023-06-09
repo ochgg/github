@@ -256,7 +256,7 @@ app.put("/user/update/:id", check.auth, async (req, res) => {
 
 
 /////////Ruta para consultar el perfil de los usuarios///////////////
-app.get('/user/profiles/:id', async (req, res) => {
+app.get('/user/profiles/:id', check.auth, async (req, res) => {
   const { id } = req.params;
 
   try {
@@ -351,22 +351,6 @@ app.get('/user/list', check.auth, async (req, res) => {
 
 
 /////////////// Ruta para seguir a un usuario////////////////////////////
-// app.post('/user/follow/:id', async (req, res) => {
-//   const { id } = req.params;
-//   const { followed } = req.body;
-
-//   try {
-//     const dbConnection = await connection();
-//     const followUserSql = 'INSERT INTO follow (user_id, followed_id) VALUES (?, ?)';
-//     await dbConnection.query(followUserSql, [followed, id]);
-
-//     res.json({ message: 'Has seguido al usuario correctamente.' });
-//   } catch (error) {
-//     console.error('Error:', error);
-//     res.status(500).json({ message: 'Ha ocurrido un error en el servidor' });
-//   }
-// });
-
 app.post('/user/follow/:id', check.auth, async (req, res) => {
   const { id } = req.params;
   const { following } = req.body;
@@ -455,7 +439,7 @@ app.delete('/user/unfollow/:id', check.auth, async (req, res) => {
 // });
 
 ////////////////Publicaciones de post//////////////
-app.post('/publications/save', check.auth, async (req, res) => {
+app.post('/publications/save', async (req, res) => {
   const newPublications = req.body;
 
   // Obtén los valores de los campos de la publicación
@@ -548,7 +532,7 @@ app.get("/user/publications/feed/:userId", async (req, res) => {
 
 
 ////////// Ruta para obtener los usuarios seguidos por un usuario ///////////////
-app.get('/user/follow/following/:id', async (req, res) => {
+app.get('/user/follow/following/:id', check.auth, async (req, res) => {
   const { id } = req.params;
 
   try {
@@ -574,7 +558,7 @@ app.get('/user/follow/following/:id', async (req, res) => {
 });
 
 ////////// Ruta para obtener los seguidores de un usuario ///////////////
-app.get('/user/follow/followers/:id', async (req, res) => {
+app.get('/user/follow/followers/:id', check.auth, async (req, res) => {
   const { id } = req.params;
 
   try {
