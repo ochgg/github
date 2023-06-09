@@ -4,8 +4,10 @@ const mysql = require("mysql2/promise");
 const connection = require("./database/connection");
 const cors = require("cors");
 const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
+const jwt = require("./services/jwt");
+const check = require("./middlewares/auth");
 
+ 
 
 require("dotenv").config();
 
@@ -25,6 +27,9 @@ app.use(cors());
 //Convertir los datos del body o objetos json
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Importar clave secreta
+const { secret } = jwt;
 
 
 //Ruta de prueba
@@ -158,9 +163,11 @@ app.post('/user/login', async (req, res) => {
     }
 
     // Generar el token de autenticación JWT
-    const token = jwt.sign({ userId: user.id }, 'secreto', { expiresIn: '24h' });
+    // const token = jwt.sign({ userId: user.id }, 'secreto', { expiresIn: '24h' });
+    // Generar el token utilizando la función createToken del servicio jwt.js
+    const token = jwt.createToken(user);
 
-   
+    // Enviar la respuesta con el token y los datos del usuario
     res.json({
       status: 'success',
       token,
@@ -177,7 +184,6 @@ app.post('/user/login', async (req, res) => {
         idiomas: user.idiomas,
         linkedin: user.linkedin,
         hobbies: user.hobbies,
-        image: user.image,
         conocimiento_extra: user.conocimiento_extra,
       },
     });
@@ -188,7 +194,7 @@ app.post('/user/login', async (req, res) => {
 });
 
 ////////////////Ruta Profile///////////////////
-app.get('/user/profile/:id', async (req, res) => {
+app.get('/user/profile/:id', check.auth, async (req, res) => {
   const { id } = req.params;
 
   try {
@@ -229,7 +235,7 @@ app.get('/user/profile/:id', async (req, res) => {
 
 
 ///////////////// Ruta para actualizar el perfil de usuario////////////
-app.put("/user/update/:id", async (req, res) => {
+app.put("/user/update/:id", check.auth, async (req, res) => {
   const id = parseInt(req.params.id);
   const updatedUser = req.body;
 
@@ -246,8 +252,54 @@ app.put("/user/update/:id", async (req, res) => {
   }
 });
 
+
+
+
+/////////Ruta para consultar el perfil de los usuarios///////////////
+app.get('/user/profiles/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const dbConnection = await connection();
+    const getUserSql = 'SELECT * FROM user WHERE id = ?';
+    const [userResult] = await dbConnection.query(getUserSql, [id]);
+
+    if (userResult.length === 0) {
+      return res.status(404).json({ message: 'El perfil no existe.' });
+    }
+
+    const user = userResult[0];
+
+    res.json({
+      status: 'success',
+      user: {
+        id: user.id,
+        name: user.name,
+        surname: user.surname,
+        nick: user.nick,
+        email: user.email,
+        city: user.city,
+        country: user.country,
+        edad: user.edad,
+        estudios: user.estudios,
+        idiomas: user.idiomas,
+        linkedin: user.linkedin,
+        hobbies: user.hobbies,
+        image: user.image,
+        conocimiento_extra: user.conocimiento_extra,
+      },
+    });
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ message: 'Ha ocurrido un error en el servidor' });
+  }
+});
+
+
+
+
 ////////// Ruta para obtener los contadores de un usuario//////////////////
-app.get('/user/counters/:id', async (req, res) => {
+app.get('/user/counters/:id', check.auth, async (req, res) => {
   const { id } = req.params;
 
   try {
@@ -285,7 +337,7 @@ app.get('/user/counters/:id', async (req, res) => {
 });
 
 /////////// Ruta para obtener la lista de usuarios/////////////////
-app.get('/user/list', async (req, res) => {
+app.get('/user/list', check.auth, async (req, res) => {
   try {
     const dbConnection = await connection();
     const getUsersSql = 'SELECT * FROM user';
@@ -315,7 +367,7 @@ app.get('/user/list', async (req, res) => {
 //   }
 // });
 
-app.post('/user/follow/:id', async (req, res) => {
+app.post('/user/follow/:id', check.auth, async (req, res) => {
   const { id } = req.params;
   const { following } = req.body;
 
@@ -335,7 +387,7 @@ app.post('/user/follow/:id', async (req, res) => {
 
 
 ///////////// Ruta para dejar de seguir a un usuario///////////////////
-app.delete('/user/unfollow/:id', async (req, res) => {
+app.delete('/user/unfollow/:id', check.auth, async (req, res) => {
   const { id } = req.params;
   const { followerId } = req.body; 
 
@@ -403,7 +455,7 @@ app.delete('/user/unfollow/:id', async (req, res) => {
 // });
 
 ////////////////Publicaciones de post//////////////
-app.post('/publications/save', async (req, res) => {
+app.post('/publications/save', check.auth, async (req, res) => {
   const newPublications = req.body;
 
   // Obtén los valores de los campos de la publicación
@@ -427,7 +479,7 @@ app.post('/publications/save', async (req, res) => {
 });
 
 ///////////////Consulta publicaciones usuarios///////////////
-app.get('/user/publications/:userId', async (req, res) => {
+app.get('/user/publications/:userId', check.auth, async (req, res) => {
   const { userId } = req.params;
   try {
     const dbConnection = await connection();
@@ -446,7 +498,7 @@ app.get('/user/publications/:userId', async (req, res) => {
 });
 
 ///////////////Borrar publicacion//////////////
-app.delete('/user/publications/remove/:id', async (req, res) => {
+app.delete('/user/publications/remove/:id', check.auth, async (req, res) => {
   const { id } = req.params;
   try {
     const dbConnection = await connection();
@@ -463,6 +515,34 @@ app.delete('/user/publications/remove/:id', async (req, res) => {
     res.status(500).json({ message: 'Ha ocurrido un error en el servidor' });
   }
 });
+
+
+//////////Ruta para mostrar los post todos los usuarios que yo sigo///////////
+app.get("/user/publications/feed/:userId", async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    const dbConnection = await connection();
+    const sql = 'SELECT DISTINCT p.* FROM publication p JOIN follow f ON p.user_id = f.followed_id WHERE f.user_id = ?';
+    const [results] = await dbConnection.query(sql, [userId]);
+
+    if (results.length > 0) {
+      res.json({
+        status: "success",
+        publications: results,
+      });
+    } else {
+      res.json({
+        status: "error",
+        message: "No se encontraron publicaciones",
+      });
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ message: 'Ha ocurrido un error en el servidor' });
+  }
+});
+
 
 
 

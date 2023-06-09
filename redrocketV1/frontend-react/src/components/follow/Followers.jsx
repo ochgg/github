@@ -30,24 +30,25 @@ export const Followers = () => {
           "Content-Type": "application/json",
           Authorization: localStorage.getItem("token"),
         },
-      }
-    );
+      });
 
       const data = await request.json();
       console.log(data);
 
-      if (data.status === "success" && data.followers) {
-        let newUsers = data.followers;
+      if (data.status === "success" && data.followingUsers) {
+        setUsers(prevUsers => {
+          let newUsers = data.followingUsers;
 
-        if (users.length >= 1) {
-          newUsers = [...users, ...data.followers];
-        }
+          if (prevUsers.length >= 1) {
+            newUsers = [...prevUsers, ...data.followingUsers];
+          }
 
-        setUsers(newUsers);
+          return newUsers;
+        });
         setFollowed(data.user_followed);
         setLoading(false);
 
-        if (users.length >= data.total - data.followers.length) {
+        if (users.length >= data.total - data.followingUsers.length) {
           setMore(false);
         }
       }
@@ -72,6 +73,7 @@ export const Followers = () => {
         setPage={setPage}
         more={more}
         loading={loading}
+        showFollowButton={true}
       />
 
       <p></p>

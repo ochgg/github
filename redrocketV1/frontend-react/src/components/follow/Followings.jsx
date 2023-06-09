@@ -4,7 +4,6 @@ import { UserList } from "../user/UserList";
 import { useParams } from "react-router-dom";
 import { getProfile } from "../../helpers/getProfile";
 
-
 export const Following = () => {
   const [users, setUsers] = useState([]);
   const [page, setPage] = useState(1);
@@ -26,33 +25,27 @@ export const Following = () => {
 
     try {
       const request = await fetch(Global.url + 'user/follow/following/' + userId, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: localStorage.getItem("token"),
-          },
-        }
-      );
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: localStorage.getItem("token"),
+        },
+      });
 
       const data = await request.json();
-      console.log(data);
 
-    
-
-      if (data.status === "success" && data.following) {
-        let newUsers = data.followers;
+      if (data.status === "success" && data.followingUsers) { // Cambio aquí
+        let newUsers = data.followingUsers; // Cambio aquí
 
         if (users.length >= 1) {
-          newUsers = [...users, ...data.followers];
+          newUsers = [...users, ...data.followingUsers];
         }
-
-        
 
         setUsers(newUsers);
         setFollowing(data.user_following);
         setLoading(false);
 
-        if (users.length >= data.total - data.followers.length) {
+        if (users.length >= data.total - data.followingUsers.length) { // Cambio aquí
           setMore(false);
         }
       }
@@ -61,8 +54,6 @@ export const Following = () => {
       // Manejar el error adecuadamente
     }
   };
-
-  
 
   return (
     <>

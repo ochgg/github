@@ -1,0 +1,1 @@
+Ajustes edita el perfil del usuario autenticado.
