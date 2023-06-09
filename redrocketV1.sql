@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 29-05-2023 a las 18:20:02
+-- Tiempo de generación: 09-06-2023 a las 18:06:58
 -- Versión del servidor: 10.4.28-MariaDB
--- Versión de PHP: 8.2.4
+-- Versión de PHP: 8.0.28
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -20,6 +20,19 @@ SET time_zone = "+00:00";
 --
 -- Base de datos: `redrocket`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `feedback`
+--
+
+CREATE TABLE `feedback` (
+  `id_feedback` int(11) NOT NULL,
+  `id_user_envia` int(11) NOT NULL,
+  `id_user_recive` int(11) NOT NULL,
+  `feedback` varchar(500) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -55,7 +68,15 @@ INSERT INTO `follow` (`id`, `user_id`, `followed_id`, `create_at`) VALUES
 (14, 23, 16, '2023-05-29 01:42:16'),
 (15, 1, 16, '2023-05-29 01:42:16'),
 (16, 19, 14, '2023-05-29 15:51:39'),
-(17, 8, 19, '2023-05-29 15:51:39');
+(17, 8, 19, '2023-05-29 15:51:39'),
+(24, 25, 1, '2023-06-08 13:27:40'),
+(25, 25, 7, '2023-06-08 13:39:42'),
+(26, 22, 24, '2023-06-08 15:51:49'),
+(28, 22, 1, '2023-06-08 17:43:56'),
+(31, 22, 4, '2023-06-08 20:08:31'),
+(32, 22, 5, '2023-06-08 20:09:04'),
+(33, 22, 16, '2023-06-08 20:11:00'),
+(35, 22, 25, '2023-06-08 20:50:02');
 
 -- --------------------------------------------------------
 
@@ -78,7 +99,14 @@ CREATE TABLE `publication` (
 INSERT INTO `publication` (`id`, `text`, `file`, `created_at`, `user_id`) VALUES
 (1, 'Lorem Ipsum es simplemente el texto de relleno de las imprentas y archivos de texto. Lorem Ipsum ha sido el texto de relleno estándar de las industrias desde el año 1500, cuando un impresor (N. del T. persona que se dedica a la imprenta) desconocido usó una galería de textos y los mezcló de tal manera que logró hacer un libro de textos especimen. No sólo sobrevivió 500 años, sino que tambien ingresó como texto de relleno en documentos electrónicos, quedando esencialmente igual al original. ', '', '2023-05-28 12:51:50', 16),
 (2, '¿De dónde viene?\r\nAl contrario del pensamiento popular, el texto de Lorem Ipsum no es simplemente texto aleatorio. Tiene sus raices en una pieza cl´sica de la literatura del Latin, que data del año 45 antes de Cristo, haciendo que este adquiera mas de 2000 años de antiguedad', '', '2023-05-28 16:38:05', 23),
-(3, '¿Por qué lo usamos?\r\nEs un hecho establecido hace demasiado tiempo que un lector se distraerá con el contenido del texto de un sitio mientras que mira su diseño. El punto de usar Lorem Ipsum es que tiene una distribución más o menos normal de las letras, al contrario de usar textos como por ejemplo \"Contenido aquí, contenido aquí\". Estos textos hacen parecerlo un español que se puede leer.', '', '2023-05-28 16:39:22', 16);
+(3, '¿Por qué lo usamos?\r\nEs un hecho establecido hace demasiado tiempo que un lector se distraerá con el contenido del texto de un sitio mientras que mira su diseño. El punto de usar Lorem Ipsum es que tiene una distribución más o menos normal de las letras, al contrario de usar textos como por ejemplo \"Contenido aquí, contenido aquí\". Estos textos hacen parecerlo un español que se puede leer.', '', '2023-05-28 16:39:22', 16),
+(6, 'esto es una prueba2', '', '2023-06-08 13:35:49', 25),
+(8, 'esto es una prueba4', '', '2023-06-08 13:35:49', 25),
+(11, 'esto es una prueba1', '', '2023-06-08 13:41:12', 1),
+(20, 'esto es una prueba 2', '', '2023-06-09 10:45:10', 22),
+(23, 'esto es una prueba 5', '', '2023-06-09 10:45:10', 22),
+(24, 'esto es una prueba 6', '', '2023-06-09 10:45:10', 22),
+(25, 'esto es una prueba 7', '', '2023-06-09 10:45:10', 22);
 
 -- --------------------------------------------------------
 
@@ -109,10 +137,10 @@ CREATE TABLE `user` (
 --
 
 INSERT INTO `user` (`id`, `name`, `surname`, `nick`, `email`, `password`, `city`, `country`, `edad`, `estudios`, `idiomas`, `linkedin`, `hobbies`, `conocimiento_extra`, `image`) VALUES
-(1, 'Ana', 'Sánchez', '@anasanchez', 'ana.sanchez@example.com', '$2b$10$LcO8ri6eUVQC.R0FazxbSO1zxOOx7/RtG9yCREtBGSWLrZX04X2be', 'Madrid', 'España', 29, 'Licenciada en Administración de Empresas', 'Español, Inglés', 'https://www.linkedin.com/in/anasanchez', 'Pilates, Cocina, Viajar', 'Gestión financiera, Marketing digital', 'https://randomuser.me/api/portraits/women/1.jpg'),
-(2, 'Luis', 'Gómez', '@luisgomez', 'luis.gomez@example.com', '$2b$10$D8UjJiXa0PHaoCfBFG6TCe3VLJXdXsrtXos2JfuZC993/VkPdeViG', 'Barcelona', 'España', 35, 'Ingeniero de Software', 'Español, Catalán, Inglés', 'https://www.linkedin.com/in/luisgomez', 'Fútbol, Música, Cine', 'Desarrollo de aplicaciones móviles, Inteligencia artificial', 'https://randomuser.me/api/portraits/men/2.jpg'),
-(3, 'Laura', 'Hernández', '@laurahernandez', 'laura.hernandez@example.com', '$2b$10$ere/aFdRmmtpsQeTKnXW2uCQlNll7FgWUdlj8aD3Q9zgvOlOnjPqq', 'Valencia', 'España', 31, 'Licenciada en Psicología', 'Español, Inglés, Francés', 'https://www.linkedin.com/in/laurahernandez', 'Yoga, Leer, Fotografía', 'Psicoterapia, Coaching personal', 'https://randomuser.me/api/portraits/women/3.jpg'),
-(4, 'Carlos', 'Rodríguez', '@carlosrodriguez', 'carlos.rodriguez@example.com', '$2b$10$rJ9mp8OeCKxmYaEEYEYLKew1CwunOl0TPnxELl.hdTdQC6gjfHsxW', 'Sevilla', 'España', 27, 'Ingeniero Civil', 'Español, Inglés', 'https://www.linkedin.com/in/carlosrodriguez', 'Fotografía, Senderismo, Música', 'Diseño de estructuras, Gestión de proyectos', 'https://randomuser.me/api/portraits/men/4.jpg'),
+(1, 'Ana', 'Sánchez', '@asanchez', 'ana.sanchez@example.com', '$2b$10$LcO8ri6eUVQC.R0FazxbSO1zxOOx7/RtG9yCREtBGSWLrZX04X2be', 'Madrid', 'España', 29, 'Licenciada en Administración de Empresas', 'Español, Inglés', 'https://www.linkedin.com/in/anasanchez', 'Pilates, Cocina, Viajar', 'Gestión financiera, Marketing digital', 'https://randomuser.me/api/portraits/women/1.jpg'),
+(2, 'Luis', 'Gómez', '@lgomez', 'luis.gomez@example.com', '$2b$10$D8UjJiXa0PHaoCfBFG6TCe3VLJXdXsrtXos2JfuZC993/VkPdeViG', 'Barcelona', 'España', 35, 'Ingeniero de Software', 'Español, Catalán, Inglés', 'https://www.linkedin.com/in/luisgomez', 'Fútbol, Música, Cine', 'Desarrollo de aplicaciones móviles, Inteligencia artificial', 'https://randomuser.me/api/portraits/men/2.jpg'),
+(3, 'Laura', 'Hernández', '@laurah', 'laura.hernandez@example.com', '$2b$10$ere/aFdRmmtpsQeTKnXW2uCQlNll7FgWUdlj8aD3Q9zgvOlOnjPqq', 'Valencia', 'España', 31, 'Licenciada en Psicología', 'Español, Inglés, Francés', 'https://www.linkedin.com/in/laurahernandez', 'Yoga, Leer, Fotografía', 'Psicoterapia, Coaching personal', 'https://randomuser.me/api/portraits/women/3.jpg'),
+(4, 'Carlos', 'Rodríguez', '@carlosr', 'carlos.rodriguez@example.com', '$2b$10$rJ9mp8OeCKxmYaEEYEYLKew1CwunOl0TPnxELl.hdTdQC6gjfHsxW', 'Sevilla', 'España', 27, 'Ingeniero Civil', 'Español, Inglés', 'https://www.linkedin.com/in/carlosrodriguez', 'Fotografía, Senderismo, Música', 'Diseño de estructuras, Gestión de proyectos', 'https://randomuser.me/api/portraits/men/4.jpg'),
 (5, 'Sara', 'López', '@saralopez', 'sara.lopez@example.com', '$2b$10$70grG5csPGhARiXaWGUbKe4I/sTCbHjGoeGPFlg4gMNx.OWq5BjxC', 'Bilbao', 'España', 33, 'Licenciada en Derecho', 'Español, Inglés', 'https://www.linkedin.com/in/saralopez', 'Pintura, Viajar, Cocina', 'Derecho laboral, Negociación', 'https://randomuser.me/api/portraits/women/5.jpg'),
 (6, 'Miguel', 'Torres', '@migueltorres', 'miguel.torres@example.com', '$2b$10$chwEkSIp.JUD0NbAimaeBO9n0BzdWHHp3KKuzCNgGTd2N/ypRwnn6', 'Zaragoza', 'España', 29, 'Ingeniero Industrial', 'Español, Inglés', 'https://www.linkedin.com/in/migueltorres', 'Deportes acuáticos, Fotografía, Leer', 'Gestión de la cadena de suministro, Energías renovables', 'https://randomuser.me/api/portraits/men/6.jpg'),
 (7, 'Elena', 'Jiménez', '@elenajimenez', 'elena.jimenez@example.com', '$2b$10$ZXf5DxuOwChP5J8vsPnSYOsZ9tUkEv8XxprqCZOws.IUM6h/gCZlW', 'Málaga', 'España', 28, 'Licenciada en Comunicación', 'Español, Inglés', 'https://www.linkedin.com/in/elenajimenez', 'Baile, Fotografía, Viajar', 'Marketing digital, Relaciones públicas', 'https://randomuser.me/api/portraits/women/7.jpg'),
@@ -125,10 +153,10 @@ INSERT INTO `user` (`id`, `name`, `surname`, `nick`, `email`, `password`, `city`
 (14, 'Andrés', 'Silva', '@andressilva', 'andres.silva@example.com', '$2b$10$XERyXgY.PixPTdNzQgIhiurjrf8wDUdAqXShRGDzrJuLT1IPf713e', 'Madrid', 'España', 33, 'Licenciado en Derecho', 'Español, Inglés', 'https://www.linkedin.com/in/andressilva', 'Gimnasio, Viajar, Leer', 'Derecho penal, Mediación', 'https://randomuser.me/api/portraits/men/14.jpg'),
 (15, 'Carmen', 'Vega', '@carmenvega', 'carmen.vega@example.com', '$2b$10$Ej2eAiLT89oxxseeJiLYOuCb9EkMrxMdxUSAM5TluYGB2rtt7l1De', 'Sevilla', 'España', 28, 'Licenciada en Marketing', 'Español, Inglés', 'https://www.linkedin.com/in/carmenvega', 'Pintura, Fotografía, Yoga', 'Investigación de mercados, Marketing digital', 'https://randomuser.me/api/portraits/women/15.jpg'),
 (16, 'Daniel', 'Garcez', '@danigarrido', 'daniel.garrido@example.com', '$2b$10$kM23hgQ6B7oco0GRk8tfveGGDdKYCBsVaDBFQAlK08Yc1j8mMFgLO', 'Málaga', 'España', 32, 'Ingeniero de Telecomunicaciones', 'Español, Inglés, Italiano', 'https://www.linkedin.com/in/danielgarrido', 'Ciclismo, Música, Viajar, Deportes', 'Redes de datos, Internet de las cosas, Developers Fullstack', 'https://randomuser.me/api/portraits/men/16.jpg'),
-(17, 'María José', 'Morales', '@mariajosemorales', 'mariajose.morales@example.com', '$2b$10$UzcyXXo2AxtP29r9H9BZV.0IjqpRlJX.M7W1ZzYm4RyZ35c9iYnpW', 'Valencia', 'España', 29, 'Licenciada en Medicina', 'Español, Inglés', 'https://www.linkedin.com/in/mariajosemorales', 'Yoga, Fotografía, Cocina', 'Medicina interna, Nutrición', 'https://randomuser.me/api/portraits/women/17.jpg'),
+(17, 'María José', 'Morales', '@mariaj', 'mariajose.morales@example.com', '$2b$10$UzcyXXo2AxtP29r9H9BZV.0IjqpRlJX.M7W1ZzYm4RyZ35c9iYnpW', 'Valencia', 'España', 29, 'Licenciada en Medicina', 'Español, Inglés', 'https://www.linkedin.com/in/mariajosemorales', 'Yoga, Fotografía, Cocina', 'Medicina interna, Nutrición', 'https://randomuser.me/api/portraits/women/17.jpg'),
 (18, 'Jorge', 'Fernández', '@jorgefernandez', 'jorge.fernandez@example.com', '$2b$10$22FoLnwpSADdb94QgyMuHO429nshXUfSbwj80/Ce/xmT4icpTOKDa', 'Barcelona', 'España', 32, 'Licenciado en Administración de Empresas', 'Español, Catalán, Inglés', 'https://www.linkedin.com/in/jorgefernandez', 'Fútbol, Música, Viajar', 'Gestión financiera, Estrategia empresarial', 'https://randomuser.me/api/portraits/men/18.jpg'),
 (19, 'Natalia', 'Pérez', '@nataliaperez', 'natalia.perez@example.com', '$2b$10$PbbKI2nJa3oI3UTDHaWape.v4xZhhHgYJHparxFahoFYvOWmm0E2y', 'Madrid', 'España', 27, 'Licenciada en Psicología', 'Español, Inglés', 'https://www.linkedin.com/in/nataliaperez', 'Pilates, Leer, Cocina', 'Psicoterapia, Coaching personal', 'https://randomuser.me/api/portraits/women/19.jpg'),
-(20, 'Alejandro', 'López', '@alejandrolopez', 'alejandro.lopez@example.com', '$2b$10$XIXKjzeefdWVj5JulW9EAeFUt/W5f8Hm5pd..p7y3cCXNoa/3qKKG', 'Valencia', 'España', 33, 'Licenciado en Economía', 'Español, Inglés', 'https://www.linkedin.com/in/alejandrolopez', 'Música, Fútbol, Viajar', 'Análisis financiero, Planificación estratégica', 'https://randomuser.me/api/portraits/men/20.jpg'),
+(20, 'Alejandro', 'López', '@alejandrol', 'alejandro.lopez@example.com', '$2b$10$XIXKjzeefdWVj5JulW9EAeFUt/W5f8Hm5pd..p7y3cCXNoa/3qKKG', 'Valencia', 'España', 33, 'Licenciado en Economía', 'Español, Inglés', 'https://www.linkedin.com/in/alejandrolopez', 'Música, Fútbol, Viajar', 'Análisis financiero, Planificación estratégica', 'https://randomuser.me/api/portraits/men/20.jpg'),
 (21, 'María', 'Santos', '@mariasantos', 'maria.santos@example.com', '$2b$10$ood.5.npbUQg3lZxF94AnuxuDjdp.m8XJyux2exEicM1TdxRz6Y6C', 'Sevilla', 'España', 28, 'Ingeniera de Software', 'Español, Inglés', 'https://www.linkedin.com/in/mariasantos', 'Fotografía, Senderismo, Cine', 'Desarrollo de aplicaciones móviles, Inteligencia artificial', 'https://randomuser.me/api/portraits/women/21.jpg'),
 (22, 'Diego', 'Castro', '@diegocastro', 'diego.castro@example.com', '$2b$10$/L5dL0Sw18DuhGZ.f3keiech.h4c6YuW.iUaG27ALYqjNo8aW6CMG', 'Madrid', 'España', 30, 'Licenciado en Derecho', 'Español, Inglés', 'https://www.linkedin.com/in/diegocastro', 'Fútbol, Viajar, Cocina', 'Derecho civil, Derecho laboral', 'https://randomuser.me/api/portraits/men/22.jpg'),
 (23, 'Carlos', 'Garcia', '@canuñez', 'carlos.nunez@example.com', '$2b$10$FNEx.5Bd6m8DuuK.gsj7/u1VsvzA5vizP1AjdBr4q3/JAJb.pvwIG', 'Sevilla', 'España', 31, 'Ingeniero de Telecomunicaciones', 'Español, Inglés, Frances', 'https://www.linkedin.com/in/carlosnunez', 'Música, Fútbol, Viajar, Jugar', 'Redes de comunicaciones, Internet de las cosas', 'https://randomuser.me/api/portraits/women/21.jpg'),
@@ -138,6 +166,14 @@ INSERT INTO `user` (`id`, `name`, `surname`, `nick`, `email`, `password`, `city`
 --
 -- Índices para tablas volcadas
 --
+
+--
+-- Indices de la tabla `feedback`
+--
+ALTER TABLE `feedback`
+  ADD PRIMARY KEY (`id_feedback`),
+  ADD KEY `id_user_envia` (`id_user_envia`),
+  ADD KEY `id_user_recive` (`id_user_recive`);
 
 --
 -- Indices de la tabla `follow`
@@ -166,16 +202,22 @@ ALTER TABLE `user`
 --
 
 --
+-- AUTO_INCREMENT de la tabla `feedback`
+--
+ALTER TABLE `feedback`
+  MODIFY `id_feedback` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT de la tabla `follow`
 --
 ALTER TABLE `follow`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
 
 --
 -- AUTO_INCREMENT de la tabla `publication`
 --
 ALTER TABLE `publication`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
 
 --
 -- AUTO_INCREMENT de la tabla `user`
@@ -186,6 +228,13 @@ ALTER TABLE `user`
 --
 -- Restricciones para tablas volcadas
 --
+
+--
+-- Filtros para la tabla `feedback`
+--
+ALTER TABLE `feedback`
+  ADD CONSTRAINT `feedback_ibfk_1` FOREIGN KEY (`id_user_envia`) REFERENCES `user` (`id`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `feedback_ibfk_2` FOREIGN KEY (`id_user_recive`) REFERENCES `user` (`id`) ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `follow`
