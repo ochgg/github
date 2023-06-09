@@ -252,6 +252,52 @@ app.put("/user/update/:id", check.auth, async (req, res) => {
   }
 });
 
+
+
+
+/////////Ruta para consultar el perfil de los usuarios///////////////
+app.get('/user/profiles/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const dbConnection = await connection();
+    const getUserSql = 'SELECT * FROM user WHERE id = ?';
+    const [userResult] = await dbConnection.query(getUserSql, [id]);
+
+    if (userResult.length === 0) {
+      return res.status(404).json({ message: 'El perfil no existe.' });
+    }
+
+    const user = userResult[0];
+
+    res.json({
+      status: 'success',
+      user: {
+        id: user.id,
+        name: user.name,
+        surname: user.surname,
+        nick: user.nick,
+        email: user.email,
+        city: user.city,
+        country: user.country,
+        edad: user.edad,
+        estudios: user.estudios,
+        idiomas: user.idiomas,
+        linkedin: user.linkedin,
+        hobbies: user.hobbies,
+        image: user.image,
+        conocimiento_extra: user.conocimiento_extra,
+      },
+    });
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ message: 'Ha ocurrido un error en el servidor' });
+  }
+});
+
+
+
+
 ////////// Ruta para obtener los contadores de un usuario//////////////////
 app.get('/user/counters/:id', check.auth, async (req, res) => {
   const { id } = req.params;

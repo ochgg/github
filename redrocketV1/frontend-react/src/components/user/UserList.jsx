@@ -63,7 +63,7 @@ export const UserList = ({ users, getUsers, page, setPage, more, loading, }) => 
     try {
       const request = await fetch(Global.url + `user/unfollow/${userId}`, {
         method: 'DELETE',
-        body: JSON.stringify({ followerId: auth.id }), // Cambiar 'following' a 'followerId'
+        body: JSON.stringify({ followerId: auth.id }), 
         headers: {
           'Content-Type': 'application/json',
           Authorization: localStorage.getItem("token"),
