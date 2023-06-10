@@ -439,20 +439,20 @@ app.delete('/user/unfollow/:id', check.auth, async (req, res) => {
 // });
 
 ////////////////Publicaciones de post//////////////
-app.post('/publications/save', async (req, res) => {
-  const newPublications = req.body;
+app.post('/user/publications/save', check.auth, async (req, res) => {
+  const newPublication = req.body;
 
   // Obtén los valores de los campos de la publicación
-  const { text, file } = newPublications;
+  const { text, file } = newPublication;
   const created_at = new Date();
-  const user_id = req.user.id; // Obtén el ID del usuario desde la autenticación
-
-  // Crea la consulta SQL para insertar la publicación en la tabla
-  const query = 'INSERT INTO publication (text, file, created_at, user_id) VALUES (?, ?, ?, ?)';
+  const userId = req.user.id; // Obtén el ID del usuario desde la autenticación
 
   try {
+    const dbConnection = await connection();
+    // Crea la consulta SQL para insertar la publicación en la tabla
+    const query = 'INSERT INTO publication (text, file, created_at, user_id) VALUES (?, ?, ?, ?)';
     // Ejecuta la consulta con los valores correspondientes
-    await connection.query(query, [text, file, created_at, user_id]);
+    await dbConnection.query(query, [text, file, created_at, userId]);
     // Si la inserción fue exitosa, envía una respuesta de éxito al cliente
     res.json({ status: 'success', message: 'Publicación guardada exitosamente' });
   } catch (error) {
@@ -583,6 +583,49 @@ app.get('/user/follow/followers/:id', check.auth, async (req, res) => {
   }
 });
 
+//////////////Ruta para dejar un feedback a un usuario//////////////
+app.post('/user/feedback/:id', check.auth, async (req, res) => {
+  const { id } = req.params;
+  const { feedback } = req.body;
+  const userId = req.user.id; // Suponiendo que el ID del usuario logueado está disponible en req.user.id
+
+  try {
+    const dbConnection = await connection();
+
+    // Verificar si ya existe un feedback para este usuario
+    const checkFeedbackSql = 'SELECT id_feedback FROM feedback WHERE id_user_envia = ? AND id_user_recive = ?';
+    const [existingFeedback] = await dbConnection.query(checkFeedbackSql, [userId, id]);
+
+    if (existingFeedback.length > 0) {
+      return res.json({ status: 'error', message: 'Ya has dejado un feedback para este usuario.' });
+    }
+
+    // Insertar el feedback en la base de datos
+    const leaveFeedbackSql = 'INSERT INTO feedback (id_user_envia, id_user_recive, feedback) VALUES (?, ?, ?)';
+    await dbConnection.query(leaveFeedbackSql, [userId, id, feedback]);
+
+    // Obtener los detalles del usuario que envía el feedback
+    const getUserSql = 'SELECT name FROM user WHERE id = ?';
+    const [user] = await dbConnection.query(getUserSql, [userId]);
+
+    // Obtener los detalles del usuario que recibe el feedback
+    const getRecipientSql = 'SELECT name FROM user WHERE id = ?';
+    const [recipient] = await dbConnection.query(getRecipientSql, [id]);
+
+    res.json({
+      status: 'success',
+      message: 'Has dejado un feedback al usuario correctamente.',
+      feedback: {
+        sender: user[0].username,
+        recipient: recipient[0].username,
+        content: feedback
+      }
+    });
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ status: 'error', message: 'Ha ocurrido un error en el servidor' });
+  }
+});
 
 
 
@@ -594,3 +637,5 @@ app.get('/user/follow/followers/:id', check.auth, async (req, res) => {
 app.listen(port, function () {
   console.log(`Servidor NODE en el puerto ${port}`);
 });
+
+module.exports = app;

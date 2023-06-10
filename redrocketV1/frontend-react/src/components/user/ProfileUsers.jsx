@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-
 import { Global } from "../../helpers/Global";
 import avatar from "../../assets/img/user.png";
 
-export const ProfileUsers = () => {
+const ProfileUsers = () => {
   const [user, setUser] = useState(null);
+  const [feedback, setFeedback] = useState("");
+  const [feedbackList, setFeedbackList] = useState([]);
   const { userId } = useParams();
 
   useEffect(() => {
@@ -34,6 +35,44 @@ export const ProfileUsers = () => {
 
     fetchUserProfile();
   }, [userId]);
+
+  const enviarFeedback = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(Global.url + `user/feedback/${userId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token,
+        },
+        body: JSON.stringify({ feedback }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.status === "success") {
+        // El feedback se envió correctamente
+
+        // Agregar el feedback enviado a la lista de feedbacks
+        const newFeedback = {
+          id: feedbackList.length + 1,
+          feedback: feedback,
+          username: data.feedback.sender,
+        };
+        setFeedbackList([...feedbackList, newFeedback]);
+
+        // Restablecer el estado del feedback después de enviarlo
+        setFeedback("");
+
+        console.log("Feedback enviado correctamente");
+      } else {
+        // Ocurrió un error al enviar el feedback
+        console.error("Error al enviar el feedback:", data.message);
+      }
+    } catch (error) {
+      console.error("Error de red:", error);
+    }
+  };
 
   if (!user) {
     return <p>Cargando perfil del usuario...</p>;
@@ -66,6 +105,33 @@ export const ProfileUsers = () => {
             <p>Conocimientos Extras: {user.conocimiento_extra}</p>
           </div>
         </div>
+      </div>
+
+      <div>
+        <p></p>
+        <p></p>
+        <h3>Deja tu Feedback</h3>
+        <textarea
+          value={feedback}
+          onChange={(e) => setFeedback(e.target.value)}
+          placeholder="Escribe tu feedback..."
+        ></textarea>
+        <button onClick={enviarFeedback}>Enviar</button>
+      </div>
+
+      <div>
+        <h3>Feedbacks y Recomendaciones dejados</h3>
+        {feedbackList.length > 0 ? (
+          <ul>
+            {feedbackList.map((feedbackItem) => (
+              <li key={feedbackItem.id}>
+                {feedbackItem.feedback} - {feedbackItem.username}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p>No se encontraron feedback</p>
+        )}
       </div>
     </>
   );

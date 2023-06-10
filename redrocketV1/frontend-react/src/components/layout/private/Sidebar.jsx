@@ -21,7 +21,7 @@ export const Sidebar = () => {
     
 
     //Hacer la request para guardar en bd
-    const request = await fetch(Global.url + "publication/save/:id", {
+    const request = await fetch(Global.url + "user/publications/save", {
       method: "POST",
       body: JSON.stringify(newPublication),
       headers: {
