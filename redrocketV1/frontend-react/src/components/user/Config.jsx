@@ -173,8 +173,9 @@ export const Config = () => {
               defaultValue={auth.image}
             />
           </div>
-
+          <div className="container">
           <input type="submit" value="Actualizar" className="btn btn-success" />
+          </div>
         </form>
         <p></p>
       </div>
