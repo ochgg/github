@@ -5,83 +5,103 @@ import useAuth from "../../hooks/useAuth";
 import ReactTimeAgo from "react-time-ago";
 import { Global } from "../../helpers/Global";
 import { UserList } from "../user/UserList";
+import { Profile } from "../user/Profile";
 
 export const Feed = () => {
   const { auth } = useAuth();
+  const [user, setUser] = useState([]);
+  const [users, setUsers] = useState([]);
   const [publications, setPublications] = useState([]);
   const params = useParams();
 
   useEffect(() => {
-    getPublications();
-  }, []);
+    fetchUsers();
+    getPublications(auth.id);
+  }, [user.id]);
 
-  const getPublications = async (userId) => {
+  const fetchUsers = async (userId) => {
     try {
-      const request = await fetch(Global.url + `user/publications/feed/${userId}`, {
+      const response = await fetch(Global.url + "user/list", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
           Authorization: localStorage.getItem("token"),
         },
       });
+      const data = await response.json();
+      console.log(data);
+      if (data.status === "success") {
+        setUsers(data.users);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
+  const getPublications = async (userId) => {
+    const url = Global.url + `user/publications/feed/${userId}`;
+    console.log("URL:", url);
+
+    try {
+      const token = localStorage.getItem("token");
+      console.log("Token:", token);
+
+      const request = await fetch(url, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token,
+        },
+      });
       const data = await request.json();
       console.log(data);
       if (data.status === "success") {
+        console.log("Data:", data);
+
         setPublications(data.publications);
       }
     } catch (error) {
       console.error("Error:", error);
-      // Manejar el error adecuadamente
     }
   };
 
   return (
     <>
       <header className="content__header">
-        <h1 className="content__title">Timeline</h1>
-        <button className="content__button">Mostrar nuevas</button>
+        <h2 className="content__title">Publicaciones de mis seguidores</h2>
       </header>
 
       <div className="content__posts">
-        {publications.map((publication) => (
-          <div className="posts__post" key={publication.id}>
+        {publications.map((publications) => (
+          <div className="posts__post" key={publications.id}>
             <div className="post__container">
-              <div className="post__image-user">
-                <a href="#" className="post__image-link">
-                  <img
-                    src={avatar}
-                    className="post__user-image"
-                    alt="Foto de perfil"
-                  />
-                </a>
+              <div>
+                <div className="post__image-user">
+                <Link
+                      to={"/social/perfil/" + publications.user_id} className="post__image-link">
+                    <img
+                      src={publications.image}
+                      className="post__user-image"
+                      alt="Foto de perfil"
+                    />
+                  </Link>
+                </div>
               </div>
-
               <div className="post__body">
                 <div className="post__user-info">
-                  <a href="#" className="user-info__name">
-                    {publication.username}
-                  </a>
+                <Link
+                      to={"/social/perfil/" + publications.user_id} className="user-info__name">
+                    {publications.name + " " + publications.surname}
+                  </Link>
                   <span className="user-info__divider"> | </span>
-                  <ReactTimeAgo date={publication.createdAt} />
+                  <ReactTimeAgo date={publications.created_at} />
                 </div>
 
-                <h4 className="post__content">{publication.content}</h4>
+                <h4 className="post__content">{publications.text}</h4>
               </div>
-            </div>
-
-            <div className="post__buttons">
-              <a href="#" className="post__button">
-                <i className="fa-solid fa-trash-can"></i>
-              </a>
             </div>
           </div>
         ))}
-      </div>
-
-      <div className="content__container-btn">
-        <button className="content__btn-more-post">
-          Ver más publicaciones
-        </button>
       </div>
     </>
   );

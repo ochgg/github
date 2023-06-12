@@ -9,7 +9,7 @@ import { UserList } from "../../user/UserList";
 export const Sidebar = () => {
 
   const { auth, counters } = useAuth();
-  const {form, handleChanged} = useForm({});
+  const {form, handleChanged, resetForm} = useForm({});
   const [stored, setStored] = useState("not_stored");
 
   const savePublication = async(e) => {
@@ -35,6 +35,7 @@ export const Sidebar = () => {
     //Mostrar mensaje de exito o error
     if(data.status === "success") {
     setStored("stored");
+    resetForm();
     }else{
       setStored("error");
     }

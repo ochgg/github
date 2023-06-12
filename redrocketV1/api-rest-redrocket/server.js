@@ -388,56 +388,6 @@ app.delete('/user/unfollow/:id', check.auth, async (req, res) => {
 });
 
 
-
-
-// app.get('/user/list/:page', async (req, res) => {
-//   try {
-//     const { page } = req.params;
-//     const pageSize = 5; // Tamaño de la página, puedes ajustarlo según tus necesidades
-
-//     const dbConnection = await connection();
-//     const offset = (page - 1) * pageSize;
-//     const getUsersSql = `SELECT * FROM user LIMIT ${offset}, ${pageSize}`;
-//     const [users] = await dbConnection.query(getUsersSql);
-
-//     res.json(users);
-//   } catch (error) {
-//     console.error('Error:', error);
-//     res.status(500).json({ message: 'Ha ocurrido un error en el servidor' });
-//   }
-// });
-
-// app.get('/user/list/:page?', async (req, res) => {
-//   try {
-//     const dbConnection = await connection();
-//     const getUsersSql = 'SELECT * FROM user';
-//     const [users] = await dbConnection.query(getUsersSql);
-//     res.json(users);
-//   } catch (error) {
-//     console.error('Error:', error);
-//     res.status(500).json({ message: 'Ha ocurrido un error en el servidor' });
-//   }
-// });
-
-// app.get('/user/list/:page', async (req, res) => {
-//   try {
-//     const { page } = req.params;
-//     const pageSize = 5; // Tamaño de la página, puedes ajustarlo según tus necesidades
-
-//     const dbConnection = await connection();
-//     const offset = (page - 1) * pageSize;
-//     const getUsersSql = `SELECT * FROM user LIMIT ${offset}, ${pageSize}`;
-//     const [users] = await dbConnection.query(getUsersSql);
-
-//     // console.log(users);
-
-//     res.json(users);
-//   } catch (error) {
-//     console.error('Error:', error);
-//     res.status(500).json({ message: 'Ha ocurrido un error en el servidor' });
-//   }
-// });
-
 ////////////////Publicaciones de post//////////////
 app.post('/user/publications/save', check.auth, async (req, res) => {
   const newPublication = req.body;
@@ -502,12 +452,18 @@ app.delete('/user/publications/remove/:id', check.auth, async (req, res) => {
 
 
 //////////Ruta para mostrar los post todos los usuarios que yo sigo///////////
-app.get("/user/publications/feed/:userId", async (req, res) => {
+app.get("/user/publications/feed/:userId", check.auth, async (req, res) => {
   const { userId } = req.params;
 
   try {
     const dbConnection = await connection();
-    const sql = 'SELECT DISTINCT p.* FROM publication p JOIN follow f ON p.user_id = f.followed_id WHERE f.user_id = ?';
+    const sql = `
+      SELECT DISTINCT p.*, u.id, u.name, u.surname, u.image
+      FROM publication p
+      JOIN follow f ON p.user_id = f.followed_id
+      JOIN user u ON p.user_id = u.id
+      WHERE f.user_id = ? ORDER BY created_at DESC
+    `;
     const [results] = await dbConnection.query(sql, [userId]);
 
     if (results.length > 0) {
@@ -626,6 +582,60 @@ app.post('/user/feedback/:id', check.auth, async (req, res) => {
     res.status(500).json({ status: 'error', message: 'Ha ocurrido un error en el servidor' });
   }
 });
+
+
+// Ruta para obtener el feedback de un usuario específico
+// app.get("/user/feedback/:id", async (req, res) => {
+//   const { id } = req.params;
+
+//   try {
+//     const dbConnection = await connection();
+
+//     const query = `
+//       SELECT feedback, name 
+//       FROM feedback 
+//       INNER JOIN user ON feedback.id_user_envia = user.id 
+//       WHERE feedback.id_user_recive = ?;
+//     `;
+    
+//     dbConnection.query(query, [id], (error, results) => {
+//       if (error) {
+//         console.error("Error al obtener el feedback del usuario:", error);
+//         res.status(500).json({ message: "Error al obtener el feedback del usuario" });
+//       } else {
+//         res.json(results);
+//       }
+//     });
+//   } catch (error) {
+//     console.error("Error al conectar con la base de datos:", error);
+//     res.status(500).json({ message: "Error al conectar con la base de datos" });
+//   }
+// });
+
+
+app.get("/user/feedbacks/:userId", async (req, res) => {
+  const { userId } = req.params;
+  console.log("ID recibido:", userId);
+
+  try {
+    const dbConnection = await connection();
+
+    const query = "SELECT feedback, name FROM feedback INNER JOIN user ON feedback.id_user_envia = user.id WHERE feedback.id_user_recive = ?"
+    
+    dbConnection.query(query, [userId], (error, results) => {
+      if (error) {
+        console.error("Error al obtener el feedback del usuario:", error);
+        return res.status(500).json({ message: "Error al obtener el feedback del usuario" });
+      }
+      
+      res.json(results);
+    });
+  } catch (error) {
+    console.error("Error al conectar con la base de datos:", error);
+    res.status(500).json({ message: "Error al conectar con la base de datos" });
+  }
+});
+
 
 
 

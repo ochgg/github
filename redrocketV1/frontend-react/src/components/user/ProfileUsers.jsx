@@ -7,6 +7,8 @@ const ProfileUsers = () => {
   const [user, setUser] = useState(null);
   const [feedback, setFeedback] = useState("");
   const [feedbackList, setFeedbackList] = useState([]);
+  const [feedbackRegistered, setFeedbackRegistered] = useState(false);
+  const [duplicateFeedback, setDuplicateFeedback] = useState(false);
   const { userId } = useParams();
 
   useEffect(() => {
@@ -34,7 +36,26 @@ const ProfileUsers = () => {
     };
 
     fetchUserProfile();
+    cargarFeedbackList(userId);
   }, [userId]);
+
+  const cargarFeedbackList = (userId) => {
+    fetch(`${Global.url}user/feedbacks/${userId}`, {
+      
+    })
+      .then((response) => {
+        if (response.ok) {
+          return response.json();
+        }
+        throw new Error("No se pudo obtener la lista de feedback");
+      })
+      .then((feedbackList) => {
+        setFeedbackList(feedbackList);
+      })
+      .catch((error) => {
+        console.error("Ha ocurrido un error:", error.message);
+      });
+  };
 
   const enviarFeedback = async () => {
     try {
@@ -51,20 +72,38 @@ const ProfileUsers = () => {
       const data = await response.json();
 
       if (response.ok && data.status === "success") {
-        // El feedback se envió correctamente
+        // Verificar si el feedback ya está registrado
+        const isDuplicate = feedbackList.some(
+          (feedbackItem) =>
+            feedbackItem.feedback === feedback &&
+            feedbackItem.username === data.feedback.sender
+        );
 
-        // Agregar el feedback enviado a la lista de feedbacks
-        const newFeedback = {
-          id: feedbackList.length + 1,
-          feedback: feedback,
-          username: data.feedback.sender,
-        };
-        setFeedbackList([...feedbackList, newFeedback]);
+        if (isDuplicate) {
+          // Mostrar la alerta de feedback duplicado
+          setDuplicateFeedback(true);
+        } else {
+          // El feedback se envió correctamente
 
-        // Restablecer el estado del feedback después de enviarlo
-        setFeedback("");
+          // Agregar el feedback enviado a la lista de feedbacks
+          const newFeedback = {
+            id: feedbackList.length + 1,
+            feedback: feedback,
+            username: data.feedback.sender,
+          };
+          setFeedbackList([...feedbackList, newFeedback]);
 
-        console.log("Feedback enviado correctamente");
+          // Restablecer el estado del feedback después de enviarlo
+          setFeedback("");
+
+          // Mostrar la alerta de feedback registrado
+          setFeedbackRegistered(true);
+
+          console.log("Feedback enviado correctamente");
+        }
+      } else if (data.message === "Ya has dejado un feedback para este usuario") {
+        // Mostrar la alerta de feedback duplicado
+        setDuplicateFeedback(true);
       } else {
         // Ocurrió un error al enviar el feedback
         console.error("Error al enviar el feedback:", data.message);
@@ -117,6 +156,10 @@ const ProfileUsers = () => {
           placeholder="Escribe tu feedback..."
         ></textarea>
         <button onClick={enviarFeedback}>Enviar</button>
+        {feedbackRegistered && <p>Feedback registrado correctamente</p>}
+        {duplicateFeedback && (
+          <p>Error al enviar el feedback: Ya has dejado un feedback para este usuario</p>
+        )}
       </div>
 
       <div>
