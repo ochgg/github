@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 12-06-2023 a las 20:02:53
+-- Tiempo de generación: 12-06-2023 a las 21:13:58
 -- Versión del servidor: 10.4.28-MariaDB
 -- Versión de PHP: 8.0.28
 
@@ -72,7 +72,12 @@ INSERT INTO `feedback` (`id_feedback`, `id_user_envia`, `id_user_recive`, `feedb
 (11, 22, 14, 'buen equipo de trabajo'),
 (12, 22, 2, 'gdef'),
 (13, 22, 17, 'hola que bien'),
-(14, 22, 16, 'El trabaja bien');
+(14, 22, 16, 'El trabaja bien'),
+(15, 1, 2, 'Hola eres buen empleado'),
+(16, 1, 14, 'eres buen trabajador'),
+(17, 1, 8, 'sdfdsafc'),
+(18, 1, 18, 'Trabaja bien en equipo'),
+(19, 1, 4, 'Trabajas muy bien en equipo.');
 
 -- --------------------------------------------------------
 
@@ -144,7 +149,6 @@ INSERT INTO `publication` (`id`, `text`, `file`, `created_at`, `user_id`) VALUES
 (3, '¿Por qué lo usamos?\r\nEs un hecho establecido hace demasiado tiempo que un lector se distraerá con el contenido del texto de un sitio mientras que mira su diseño. El punto de usar Lorem Ipsum es que tiene una distribución más o menos normal de las letras, al contrario de usar textos como por ejemplo \"Contenido aquí, contenido aquí\". Estos textos hacen parecerlo un español que se puede leer.', '', '2023-05-28 16:39:22', 16),
 (6, 'esto es una prueba2', '', '2023-06-08 13:35:49', 25),
 (8, 'esto es una prueba4', '', '2023-06-08 13:35:49', 25),
-(11, 'esto es una prueba1', '', '2023-06-08 13:41:12', 1),
 (26, 'Hola esto es una prueba de la prueba', NULL, '2023-06-10 20:05:34', 22),
 (27, 'Hoy es un día muy bonito', NULL, '2023-06-10 20:45:16', 22),
 (35, 'Hola este red social es muy buena.', NULL, '2023-06-11 18:44:31', 22),
@@ -224,7 +228,9 @@ INSERT INTO `publication` (`id`, `text`, `file`, `created_at`, `user_id`) VALUES
 (109, 'Hola a todos de nuevo', NULL, '2023-06-12 17:52:31', 22),
 (110, 'Hola a todos de nuevo', NULL, '2023-06-12 17:52:31', 23),
 (111, 'Hola a todos de nuevo', NULL, '2023-06-12 17:52:31', 24),
-(112, 'Hola a todos de nuevo', NULL, '2023-06-12 17:52:31', 25);
+(112, 'Hola a todos de nuevo', NULL, '2023-06-12 17:52:31', 25),
+(113, 'Hola es una prueba', NULL, '2023-06-12 18:31:01', 1),
+(114, 'hola es una prueba', NULL, '2023-06-12 19:07:41', 1);
 
 -- --------------------------------------------------------
 
@@ -256,7 +262,7 @@ CREATE TABLE `user` (
 --
 
 INSERT INTO `user` (`id`, `name`, `surname`, `nick`, `email`, `password`, `city`, `country`, `edad`, `estudios`, `idiomas`, `linkedin`, `hobbies`, `conocimiento_extra`, `image`, `status`) VALUES
-(1, 'Ana', 'Sánchez', '@asanchez', 'ana.sanchez@example.com', '$2b$10$LcO8ri6eUVQC.R0FazxbSO1zxOOx7/RtG9yCREtBGSWLrZX04X2be', 'Madrid', 'España', 29, 'Licenciada en Administración de Empresas', 'Español, Inglés', 'https://www.linkedin.com/in/anasanchez', 'Pilates, Cocina, Viajar', 'Gestión financiera, Marketing digital', 'https://randomuser.me/api/portraits/women/1.jpg', 0),
+(1, 'Ana', 'Sánchez', '@asanchez', 'ana.sanchez@example.com', '$2b$10$LcO8ri6eUVQC.R0FazxbSO1zxOOx7/RtG9yCREtBGSWLrZX04X2be', 'Madrid', 'España', 32, 'Licenciada en Administración de Empresas', 'Español, Inglés', 'https://www.linkedin.com/in/anasanchez', 'Pilates, Cocina, Viajar', 'Gestión financiera, Marketing digital', 'https://randomuser.me/api/portraits/women/1.jpg', 0),
 (2, 'Luis', 'Gómez', '@lgomez', 'luis.gomez@example.com', '$2b$10$D8UjJiXa0PHaoCfBFG6TCe3VLJXdXsrtXos2JfuZC993/VkPdeViG', 'Barcelona', 'España', 35, 'Ingeniero de Software', 'Español, Catalán, Inglés', 'https://www.linkedin.com/in/luisgomez', 'Fútbol, Música, Cine', 'Desarrollo de aplicaciones móviles, Inteligencia artificial', 'https://randomuser.me/api/portraits/men/2.jpg', 0),
 (3, 'Laura', 'Hernández', '@laurah', 'laura.hernandez@example.com', '$2b$10$ere/aFdRmmtpsQeTKnXW2uCQlNll7FgWUdlj8aD3Q9zgvOlOnjPqq', 'Valencia', 'España', 31, 'Licenciada en Psicología', 'Español, Inglés, Francés', 'https://www.linkedin.com/in/laurahernandez', 'Yoga, Leer, Fotografía', 'Psicoterapia, Coaching personal', 'https://randomuser.me/api/portraits/women/3.jpg', 0),
 (4, 'Carlos', 'Rodríguez', '@carlosr', 'carlos.rodriguez@example.com', '$2b$10$rJ9mp8OeCKxmYaEEYEYLKew1CwunOl0TPnxELl.hdTdQC6gjfHsxW', 'Sevilla', 'España', 27, 'Ingeniero Civil', 'Español, Inglés', 'https://www.linkedin.com/in/carlosrodriguez', 'Fotografía, Senderismo, Música', 'Diseño de estructuras, Gestión de proyectos', 'https://randomuser.me/api/portraits/men/4.jpg', 0),
@@ -337,7 +343,7 @@ ALTER TABLE `admin`
 -- AUTO_INCREMENT de la tabla `feedback`
 --
 ALTER TABLE `feedback`
-  MODIFY `id_feedback` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id_feedback` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT de la tabla `follow`
@@ -349,7 +355,7 @@ ALTER TABLE `follow`
 -- AUTO_INCREMENT de la tabla `publication`
 --
 ALTER TABLE `publication`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=113;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=115;
 
 --
 -- AUTO_INCREMENT de la tabla `user`
