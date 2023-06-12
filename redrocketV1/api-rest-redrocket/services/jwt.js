@@ -23,7 +23,7 @@ const createToken = (user) => {
   };
 
   // Generar el token de autenticación JWT
-  const token = jwt.sign(payload, secret, { expiresIn: '24h' });
+  const token = jwt.sign(payload, secret, { expiresIn: '30d' });
 
   return token;
 };
