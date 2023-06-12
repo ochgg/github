@@ -629,7 +629,7 @@ app.post('/user/feedback/:id', check.auth, async (req, res) => {
 // });
 
 
-app.get("/user/feedbacks/:userId", async (req, res) => {
+app.get("/user/feedbacks/:userId", check.auth, async (req, res) => {
   const { userId } = req.params;
   console.log("ID recibido:", userId);
 
