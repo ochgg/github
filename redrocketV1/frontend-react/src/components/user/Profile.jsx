@@ -142,7 +142,7 @@ export const Profile = () => {
                   </button>
                 ) : (
                   
-                    
+                 
                   < button className="content__button content__button--right">
                    <Link to={"/social/perfil/usuario/" + user.id}>Ver perfil</Link> 
                   </button>

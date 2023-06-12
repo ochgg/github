@@ -9,7 +9,9 @@ export const Nav = () => {
 
 
   return (
+    
     <nav className="navbar__container-lists">
+      <div>
       <ul className="container-lists__menu-list">
         <li className="menu-list__item">
           <NavLink to="/social" className="menu-list__link">
@@ -32,10 +34,12 @@ export const Nav = () => {
           </NavLink>
         </li>
       </ul>
-
+      </div>
+<div>
       <ul className="container-lists__list-end">
+        <div>
         <li className="list-end__item">
-        <NavLink to={"/social/perfil/"+auth.id} className="list-end__link-image">
+        {/* <NavLink to={"/social/perfil/"+auth.id} className="list-end__link-image">
           {auth.image != "defaul.png" && (
               <img
                 src={auth.image}
@@ -50,8 +54,9 @@ export const Nav = () => {
                 alt="Foto de perfil"
               />
             )}
-          </NavLink>
+          </NavLink> */}
         </li>
+        </div>
         <li className="list-end__item">
           <NavLink to={"/social/perfil/"+auth.id} className="list-end__link">
             <span className="list-end__name">{auth.nick}</span>
@@ -64,6 +69,7 @@ export const Nav = () => {
             <span className="list-end__name">Ajustes</span>
           </NavLink>
         </li>
+
         <li className="list-end__item">
           <NavLink to="/social/logout" className="list-end__link">
             <i className="fa-solid fa-arrow-right-from-bracket"></i>
@@ -71,6 +77,8 @@ export const Nav = () => {
           </NavLink>
         </li>
       </ul>
+      </div>
     </nav>
+    
   );
 };
