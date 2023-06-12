@@ -193,6 +193,8 @@ app.post('/user/login', async (req, res) => {
   }
 });
 
+
+
 ////////////////Ruta Profile///////////////////
 app.get('/user/profile/:id', check.auth, async (req, res) => {
   const { id } = req.params;
@@ -361,6 +363,20 @@ app.post('/user/follow/:id', check.auth, async (req, res) => {
     await dbConnection.query(followUserSql, [id, following]);
 
     res.json({ status: 'success', message: 'Has seguido al usuario correctamente.' });
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ status: 'error', message: 'Ha ocurrido un error en el servidor' });
+  }
+});
+
+/////////////// Ruta para sacar info de follow////////////////////////////
+app.get('/user/follow/list', check.auth, async (req, res) => {
+  try {
+    const dbConnection = await connection();
+    const followListSql = 'SELECT * FROM follow';
+
+    const followList = await dbConnection.query(followListSql);
+    res.json(followList);
   } catch (error) {
     console.error('Error:', error);
     res.status(500).json({ status: 'error', message: 'Ha ocurrido un error en el servidor' });
@@ -613,7 +629,7 @@ app.post('/user/feedback/:id', check.auth, async (req, res) => {
 // });
 
 
-app.get("/user/feedbacks/:userId", async (req, res) => {
+app.get("/user/feedbacks/:userId", check.auth, async (req, res) => {
   const { userId } = req.params;
   console.log("ID recibido:", userId);
 

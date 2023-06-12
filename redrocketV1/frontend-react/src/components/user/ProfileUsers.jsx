@@ -162,7 +162,7 @@ const ProfileUsers = () => {
         )}
       </div>
 
-      <div>
+      <div className="container">
         <h3>Feedbacks y Recomendaciones dejados</h3>
         {feedbackList.length > 0 ? (
           <ul>

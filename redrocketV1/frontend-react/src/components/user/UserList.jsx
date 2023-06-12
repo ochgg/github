@@ -5,7 +5,7 @@ import useAuth from "../../hooks/useAuth";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
-export const UserList = ({ users, getUsers, page, setPage, more, loading, }) => {
+export const UserList = ({ users, getUsers, page, setPage, more, loading }) => {
   const { auth } = useAuth();
   const [following, setFollowing] = useState([]);
 
@@ -26,63 +26,61 @@ export const UserList = ({ users, getUsers, page, setPage, more, loading, }) => 
   useEffect(() => {
     // Guardar el estado de seguimiento en el localStorage cuando cambie
     localStorage.setItem("following", JSON.stringify(following));
-  }, [following]);  
-
+  }, [following]);
 
   const follow = async (userId, followingId) => {
     if (!userId || !followingId) {
-      console.error('Los valores de userId y followedId no pueden ser nulos');
+      console.error("Los valores de userId y followedId no pueden ser nulos");
       return;
     }
-  
+
     try {
       const request = await fetch(Global.url + `user/follow/${userId}`, {
-        method: 'POST',
+        method: "POST",
         body: JSON.stringify({ following: followingId }),
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           Authorization: localStorage.getItem("token"),
         },
       });
-  
+
       const data = await request.json();
-      console.log (data)
-  
-       if (data.status == "success") {
-      //   // Actualizar estado de followed, agregando un nuevo follow
-         setFollowing([...following, userId]);
-       }
+      console.log(data);
+
+      if (data.status == "success") {
+        //   // Actualizar estado de followed, agregando un nuevo follow
+        setFollowing([...following, userId]);
+      }
     } catch (error) {
-      console.error('Error:', error);
+      console.error("Error:", error);
       // Manejar el error adecuadamente
     }
   };
-  
-  
+
   const unfollow = async (userId) => {
     try {
       const request = await fetch(Global.url + `user/unfollow/${userId}`, {
-        method: 'DELETE',
-        body: JSON.stringify({ followerId: auth.id }), 
+        method: "DELETE",
+        body: JSON.stringify({ followerId: auth.id }),
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           Authorization: localStorage.getItem("token"),
         },
       });
-  
+
       const data = await request.json();
-  
-      if (data.message === 'Has dejado de seguir al usuario correctamente.') {
-        const filterFollowing = following.filter((followingId) => userId !== followingId);
+
+      if (data.message === "Has dejado de seguir al usuario correctamente.") {
+        const filterFollowing = following.filter(
+          (followingId) => userId !== followingId
+        );
         setFollowing(filterFollowing);
       }
     } catch (error) {
-      console.error('Error:', error);
+      console.error("Error:", error);
       // Manejar el error adecuadamente
     }
   };
-  
-  
 
   return (
     <>
@@ -90,32 +88,42 @@ export const UserList = ({ users, getUsers, page, setPage, more, loading, }) => 
         {users.map((user) => (
           <article className="posts__post" key={user.id}>
             <div className="post__container">
-
-              <div className="post__image-user">
-                <Link to={"/social/perfil/"+user.id} className="post__image-link">
-                  {user.image !== "defaul.png" ? (
-                    <img
-                      src={user.image}
-                      className="post__user-image"
-                      alt="Foto de perfil"
-                    />
-                  ) : (
-                    <img
-                      src={avatar}
-                      className="post__user-image"
-                      alt="Foto de perfil"
-                    />
-                  )}
-                </Link>
+              <div>
+                <div className="post__image-user">
+                  <Link
+                    to={"/social/perfil/" + user.id}
+                    className="post__image-link"
+                  >
+                    {user.image !== "defaul.png" ? (
+                      <img
+                        src={user.image}
+                        className="post__user-image"
+                        alt="Foto de perfil"
+                      />
+                    ) : (
+                      <img
+                        src={avatar}
+                        className="post__user-image"
+                        alt="Foto de perfil"
+                      />
+                    )}
+                  </Link>
+                </div>
               </div>
 
               <div className="post__body">
                 <div className="post__user-info">
-                <Link to={"/social/perfil/"+user.id} className="user-info__name">
+                  <Link
+                    to={"/social/perfil/" + user.id}
+                    className="user-info__name"
+                  >
                     {user.name} {user.surname}
-                </Link>
+                  </Link>
                   <span className="user-info__divider"> | </span>
-                  <Link to={"/social/perfil/"+user.id} className="user-info__create-date">
+                  <Link
+                    to={"/social/perfil/" + user.id}
+                    className="user-info__create-date"
+                  >
                     {user.created_at}
                   </Link>
                 </div>
@@ -134,7 +142,6 @@ export const UserList = ({ users, getUsers, page, setPage, more, loading, }) => 
                     Seguir
                   </button>
                 ) : (
-                  
                   <button
                     className="post__button"
                     onClick={() => unfollow(user.id)}
